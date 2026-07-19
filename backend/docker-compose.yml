@@ -1,6 +1,6 @@
 services:
     postgres:
-        image: postgres:18
+        image: postgres:17
         container_name: concorde-postgres
 
         restart: unless-stopped
@@ -21,6 +21,9 @@ services:
         container_name: concorde-mongo
 
         restart: unless-stopped
+
+        ports:
+            - "27017:27017"
 
         volumes:
             - mongo_data:/data/db
