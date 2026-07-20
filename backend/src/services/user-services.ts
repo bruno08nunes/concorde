@@ -1,6 +1,6 @@
-import { compare, hash } from "bcrypt";
 import { IUserRepository } from "../repositories/user-repository";
 import { UserCreateInput } from "../../generated/prisma/models";
+import { comparePassword, hashPassword } from "../utils/crypto";
 
 export class UserService {
     constructor(private userRepository: IUserRepository) {}
@@ -13,7 +13,7 @@ export class UserService {
             return;
         }
 
-        const isPasswordCorrect = await compare(password, user.password);
+        const isPasswordCorrect = await comparePassword(password, user.password);
 
         if (!isPasswordCorrect) {
             // Lançar erro
@@ -36,7 +36,7 @@ export class UserService {
             return;
         }
 
-        const hashedPassword = await hash(password, 10);
+        const hashedPassword = await hashPassword(password);
 
         return this.userRepository.create({
             username,

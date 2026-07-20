@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import z from "zod";
 import PrismaUserRepository from "../repositories/prisma/prisma-user-repository";
 import { UserService } from "../services/user-services";
+import { signJwt } from "../utils/jwt";
 
 const userService = new UserService(new PrismaUserRepository());
 
@@ -16,13 +17,13 @@ export async function loginController(req: Request, res: Response) {
     try {
         const user = await userService.login(email, password);
 
-        // Criar token
+        const token = signJwt({ id: user!.id });
 
         res.json({
             message: "Login realizado",
             data: { ...user, password: undefined },
             success: true,
-            // token
+            token,
         });
     } catch (err) {}
 }
@@ -49,14 +50,18 @@ export async function registerController(req: Request, res: Response) {
     );
 
     try {
-        const user = await userService.createUser({username, email, password});
+        const user = await userService.createUser({
+            username,
+            email,
+            password,
+        });
 
-        // Criar token
+        const token = signJwt({ id: user!.id });
 
         res.status(201).json({
             message: "Cadastro realizado",
             success: true,
-            // token
+            token
         });
     } catch (err) {}
 }
