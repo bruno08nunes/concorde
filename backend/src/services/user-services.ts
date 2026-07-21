@@ -1,6 +1,7 @@
 import { IUserRepository } from "../repositories/user-repository";
 import { UserCreateInput } from "../../generated/prisma/models";
 import { comparePassword, hashPassword } from "../utils/crypto";
+import { InvalidCredentialsError, UserAlreadyExistsError } from "../utils/error";
 
 export class UserService {
     constructor(private userRepository: IUserRepository) {}
@@ -9,14 +10,13 @@ export class UserService {
         const user = await this.userRepository.findByEmail(email);
 
         if (!user) {
-            // Lançar erro
-            return;
+            throw new InvalidCredentialsError();
         }
 
         const isPasswordCorrect = await comparePassword(password, user.password);
 
         if (!isPasswordCorrect) {
-            // Lançar erro
+            throw new InvalidCredentialsError();
         }
 
         return user;
@@ -27,13 +27,13 @@ export class UserService {
             await this.userRepository.findByEmail(email);
 
         if (existingUserWithEmail) {
-            return;
+            throw new UserAlreadyExistsError("email");
         }
 
         const existingUserWithUsername = await this.userRepository.findByUsername(username);
 
         if (existingUserWithUsername) {
-            return;
+            throw new UserAlreadyExistsError("nome de usuário");
         }
 
         const hashedPassword = await hashPassword(password);

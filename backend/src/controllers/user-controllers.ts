@@ -14,18 +14,16 @@ export async function loginController(req: Request, res: Response) {
 
     const { email, password } = authenticationBodySchema.parse(req.body);
 
-    try {
-        const user = await userService.login(email, password);
+    const user = await userService.login(email, password);
 
-        const token = signJwt({ id: user!.id });
+    const token = signJwt({ id: user!.id });
 
-        res.json({
-            message: "Login realizado",
-            data: { ...user, password: undefined },
-            success: true,
-            token,
-        });
-    } catch (err) {}
+    res.json({
+        message: "Login realizado",
+        data: { ...user, password: undefined },
+        success: true,
+        token,
+    });
 }
 
 export async function registerController(req: Request, res: Response) {
@@ -49,19 +47,17 @@ export async function registerController(req: Request, res: Response) {
         req.body,
     );
 
-    try {
-        const user = await userService.createUser({
-            username,
-            email,
-            password,
-        });
+    const user = await userService.createUser({
+        username,
+        email,
+        password,
+    });
 
-        const token = signJwt({ id: user!.id });
+    const token = signJwt({ id: user!.id });
 
-        res.status(201).json({
-            message: "Cadastro realizado",
-            success: true,
-            token
-        });
-    } catch (err) {}
+    res.status(201).json({
+        message: "Cadastro realizado",
+        success: true,
+        token,
+    });
 }
