@@ -15,19 +15,11 @@ function Register() {
     const mutation = useMutation({
         mutationFn: registerAPI,
         onSuccess(data) {
-            if (!data.success) {
-                toast(data.message, {
-                    style: { color: "red" },
-                    position: "top-center",
-                });
-                return;
-            }
-
             login(data.data, data.token);
             navigate("/");
         },
-        onError() {
-            toast("Erro ao fazer login. Tente novamente mais tarde!", {
+        onError(err) {
+            toast(err.message, {
                 style: { color: "red" },
                 position: "top-center",
             });

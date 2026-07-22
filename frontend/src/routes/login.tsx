@@ -15,19 +15,11 @@ function Login() {
     const mutation = useMutation({
         mutationFn: loginApi,
         onSuccess(data) {
-            if (!data.success) {
-                toast(data.message, {
-                    style: { color: "red" },
-                    position: "top-center",
-                });
-                return;
-            }
-
             login(data.data, data.token);
             navigate("/");
         },
-        onError() {
-            toast("Erro ao fazer login. Tente novamente mais tarde!", {
+        onError(error) {
+            toast(error.message, {
                 style: { color: "red" },
                 position: "top-center",
             });
