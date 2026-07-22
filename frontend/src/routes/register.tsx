@@ -6,6 +6,7 @@ import { register as registerAPI } from "../api/auth";
 import Input from "../components/form/Input";
 import { useAuthStore } from "../stores/authStore";
 import { useNavigate } from "react-router-dom";
+import { toast, Toaster } from "sonner";
 
 function Register() {
     const login = useAuthStore((state) => state.login);
@@ -14,8 +15,22 @@ function Register() {
     const mutation = useMutation({
         mutationFn: registerAPI,
         onSuccess(data) {
+            if (!data.success) {
+                toast(data.message, {
+                    style: { color: "red" },
+                    position: "top-center",
+                });
+                return;
+            }
+
             login(data.data, data.token);
             navigate("/");
+        },
+        onError() {
+            toast("Erro ao fazer login. Tente novamente mais tarde!", {
+                style: { color: "red" },
+                position: "top-center",
+            });
         },
     });
 
@@ -62,6 +77,7 @@ function Register() {
                     errorMessage={errors.username?.message}
                     required
                     maxLength={20}
+                    autoComplete="username"
                 />
                 <Input
                     type="email"
@@ -70,6 +86,7 @@ function Register() {
                     label="Email:"
                     placeholder="Email"
                     errorMessage={errors.email?.message}
+                    autoComplete="email"
                 />
                 <Input
                     type="password"
@@ -79,6 +96,7 @@ function Register() {
                     placeholder="Senha"
                     errorMessage={errors.password?.message}
                     maxLength={20}
+                    autoComplete="new-password"
                 />
 
                 <button
@@ -89,6 +107,7 @@ function Register() {
                     {mutation.isPending ? "Entrando" : "Entrar"}
                 </button>
             </form>
+            <Toaster />
         </div>
     );
 }

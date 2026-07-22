@@ -6,6 +6,7 @@ import { login as loginApi } from "../api/auth";
 import Input from "../components/form/Input";
 import { useAuthStore } from "../stores/authStore";
 import { useNavigate } from "react-router-dom";
+import { toast, Toaster } from "sonner";
 
 function Login() {
     const login = useAuthStore((state) => state.login);
@@ -14,8 +15,22 @@ function Login() {
     const mutation = useMutation({
         mutationFn: loginApi,
         onSuccess(data) {
+            if (!data.success) {
+                toast(data.message, {
+                    style: { color: "red" },
+                    position: "top-center",
+                });
+                return;
+            }
+
             login(data.data, data.token);
             navigate("/");
+        },
+        onError() {
+            toast("Erro ao fazer login. Tente novamente mais tarde!", {
+                style: { color: "red" },
+                position: "top-center",
+            });
         },
     });
 
@@ -52,6 +67,7 @@ function Login() {
                     placeholder="Email"
                     autoFocus
                     errorMessage={errors.email?.message}
+                    autoComplete="email"
                 />
                 <Input
                     type="password"
@@ -61,6 +77,7 @@ function Login() {
                     placeholder="Senha"
                     errorMessage={errors.password?.message}
                     maxLength={20}
+                    autoComplete="current-password"
                 />
 
                 <button
@@ -71,6 +88,7 @@ function Login() {
                     {mutation.isPending ? "Entrando" : "Entrar"}
                 </button>
             </form>
+            <Toaster />
         </div>
     );
 }
