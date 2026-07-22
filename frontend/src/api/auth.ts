@@ -1,5 +1,7 @@
+import { env } from "../lib/env";
+
 export async function login(data: { email: string; password: string }) {
-    const res = await fetch("http://localhost:3333/auth/login", {
+    const res = await fetch(env.VITE_API_URL + "/auth/login", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -14,7 +16,7 @@ export async function register(data: {
     email: string;
     password: string;
 }) {
-    const res = await fetch("http://localhost:3333/auth/register", {
+    const res = await fetch(env.VITE_API_URL + "/auth/register", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
