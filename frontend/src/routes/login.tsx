@@ -2,26 +2,20 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { login as loginApi } from "../api/auth";
+import Input from "../components/form/Input";
+import { useAuthStore } from "../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-    async function login(data: { email: string; password: string }) {
-        const res = await fetch("http://localhost:3333/auth/login", {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        return res.json();
-    }
+    const login = useAuthStore((state) => state.login);
+    const navigate = useNavigate();
 
     const mutation = useMutation({
-        mutationFn: login,
+        mutationFn: loginApi,
         onSuccess(data) {
-            // TOdo: Salva no estado global
-            // localStorage.setItem("token", data.toke);
-            // Todo: mudar de aba
-            console.log(data);
+            login(data.data, data.token);
+            navigate("/");
         },
     });
 
@@ -33,26 +27,51 @@ function Login() {
             .max(20, "A senha deve ter ao máximo 20 caracteres"),
     });
 
-    const { register, handleSubmit } = useForm<z.infer<typeof schema>>({
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
     });
 
     return (
-        <form
-            onSubmit={handleSubmit((data) => mutation.mutate(data))}
-            className="flex flex-col gap-4 w-100 mx-auto"
-        >
-            <input type="email" {...register("email")} className="border" />
-            <input
-                type="password"
-                {...register("password")}
-                className="border"
-            />
+        <div className="min-h-svh flex justify-center items-center">
+            <form
+                onSubmit={handleSubmit((data) => mutation.mutate(data))}
+                className="flex flex-col p-8 gap-4 w-100 bg-slate- 700 border-indigo-600 border-4 text-white rounded-2xl"
+            >
+                <h2 className="text-4xl text-center text-shadow-indigo-600 text-shadow-lg">
+                    Login
+                </h2>
+                <Input
+                    type="email"
+                    id="email"
+                    {...register("email")}
+                    label="Email:"
+                    placeholder="Email"
+                    autoFocus
+                    errorMessage={errors.email?.message}
+                />
+                <Input
+                    type="password"
+                    id="password"
+                    {...register("password")}
+                    label="Senha:"
+                    placeholder="Senha"
+                    errorMessage={errors.password?.message}
+                    maxLength={20}
+                />
 
-            <button type="submit" disabled={mutation.isPending} className="border">
-                {mutation.isPending ? "Entrando" : "Entrar"}
-            </button>
-        </form>
+                <button
+                    type="submit"
+                    disabled={mutation.isPending}
+                    className="border-4 border-indigo-600 p-2 rounded-2xl text-lg cursor-pointer hover:bg-indigo-600 focus:bg-indigo-600 duration-[.4s]"
+                >
+                    {mutation.isPending ? "Entrando" : "Entrar"}
+                </button>
+            </form>
+        </div>
     );
 }
 

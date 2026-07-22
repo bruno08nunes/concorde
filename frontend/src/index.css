@@ -1,19 +1,23 @@
+@layer {
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html,
+    body,
+    #root {
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100svh;
+    }
+
+    body {
+        font-family: system-ui, sans-serif;
+    }
+}
+
 @import "tailwindcss";
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html,
-body,
-#root {
-    width: 100%;
-    min-height: 100vh;
-    min-height: 100svh;
-}
-
-body {
-    font-family: system-ui, sans-serif;
-}
+/* indigo-600 slate-700 slate-800 slate-900 green-500 */
