@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { env } from "../env/index";
 import { ZodError } from "zod";
-import ConcordeError from "../utils/error";
+import ConcordeError from "../utils/errors/error";
 
 export interface AppError extends Error {
     status?: number;
