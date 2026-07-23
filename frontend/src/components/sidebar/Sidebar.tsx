@@ -1,6 +1,7 @@
-import { Search, Settings } from "lucide-react";
+import { Bell, Search, Settings } from "lucide-react";
 import UserListItem from "./UserListItem";
-import IconButton from "./IconButton";
+import IconButton from "../IconButton";
+import IconLink from "../IconLink";
 
 export default function Sidebar() {
     return (
@@ -39,6 +40,9 @@ export default function Sidebar() {
                     className="w-12 rounded-full object-cover aspect-square"
                 />
                 <span className="text-xl flex-1">Nome</span>
+                <IconLink to="/notificacoes">
+                    <Bell />
+                </IconLink>
                 <IconButton>
                     <Settings />
                 </IconButton>

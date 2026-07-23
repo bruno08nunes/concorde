@@ -1,20 +1,31 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./routes/home.tsx";
+import Home from "./routes/home.tsx";
 import { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./routes/login.tsx";
 import Register from "./routes/register.tsx";
+import MessagesPage from "./routes/messagesPage.tsx";
+import NotificationPage from "./routes/notificationPage.tsx";
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <App />,
-        children: [],
+        element: <Home />,
+        children: [
+            {
+                path: "/",
+                element: <MessagesPage />
+            },
+            {
+                path: "/notificacoes",
+                element: <NotificationPage />
+            }
+        ],
     },
     {
         path: "/login",
