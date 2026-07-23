@@ -55,7 +55,8 @@ model GroupMember {
 
   isAdmin Boolean @default(false)
 
-  createdAt DateTime @default(now())
+  joinedAt DateTime @default(now())
+  leftAt DateTime?
 
   @@id([userId, groupId])
 }
@@ -72,6 +73,7 @@ model FriendshipRequest {
   status FriendshipRequestStatus @default(PENDING)
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([receiverId, senderId])
 }
@@ -86,6 +88,7 @@ model Friendship {
   user2   User @relation(fields: [user2Id], references: [id], onDelete: Cascade, name: "user2")
 
   createdAt DateTime @default(now())
+  endedAt DateTime?
 
   @@unique([user1Id, user2Id])
   @@index([user1Id])
