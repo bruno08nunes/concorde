@@ -2,6 +2,7 @@ import { LucideUserPlus2, Mic, PhoneCall, Plus, Video } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import IconButton from "../components/IconButton";
 import Message from "../components/Message";
+import TextArea from "../components/form/TextArea";
 
 function App() {
     return (
@@ -31,7 +32,7 @@ function App() {
                 </header>
                 <hr />
                 <div className="flex flex-col p-3 gap-2 flex-1 overflow-auto">
-                  <Message name="Nome" message="Lorem ipsum dolor sit amet." />
+                  <Message name="Nome" message="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quibusdam est laborum, ad nisi aliquid nam dolorem aliquam minima quas sed unde vero nobis deserunt velit ut quos beatae suscipit, ipsum quae dolor, ipsam mollitia blanditiis? Tenetur perspiciatis inventore asperiores. Eum ratione iste laboriosam, aperiam minima, sapiente eaque nisi unde distinctio reprehenderit eos fuga ipsa quo cupiditate tenetur maxime perferendis pariatur! Dolorem earum exercitationem suscipit quos quia facilis dolore sit accusamus? Maxime facilis temporibus sint dolorem rerum delectus voluptatum voluptate, architecto iste minima sit totam ab nesciunt enim in vero obcaecati quo, modi consequatur, numquam ipsam voluptatem. Veritatis, accusamus? Error, placeat?" />
                   <Message message="Lorem ipsum dolor sit amet." />
                   <Message name="Nome" message="Lorem ipsum dolor sit amet." />
                   <Message message="Lorem ipsum dolor sit amet." />
@@ -42,11 +43,7 @@ function App() {
                     <IconButton>
                         <Plus />
                     </IconButton>
-                    <input
-                        type="text"
-                        className="flex-1 p-1 focus:outline-0"
-                        placeholder="Digite uma mensagem..."
-                    />
+                    <TextArea />
                     <IconButton>
                         <Mic />
                     </IconButton>
