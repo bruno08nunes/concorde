@@ -74,8 +74,6 @@ model FriendshipRequest {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([receiverId, senderId])
 }
 
 model Friendship {
@@ -90,7 +88,6 @@ model Friendship {
   createdAt DateTime @default(now())
   endedAt DateTime?
 
-  @@unique([user1Id, user2Id])
   @@index([user1Id])
   @@index([user2Id])
 }
