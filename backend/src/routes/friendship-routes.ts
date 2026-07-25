@@ -1,3 +1,4 @@
+import { authMiddleware } from './../middlewares/auth-middleware';
 import { Router } from "express";
 import {
     acceptFriendshipRequest,
@@ -6,7 +7,7 @@ import {
 
 const friendshipRoutes = Router();
 
-friendshipRoutes.post("/friendship/request", sendFriendshipRequest);
+friendshipRoutes.post("/friendship/request", authMiddleware, sendFriendshipRequest);
 friendshipRoutes.post("/friendship/request/:id/accept", acceptFriendshipRequest);
 
 export default friendshipRoutes;

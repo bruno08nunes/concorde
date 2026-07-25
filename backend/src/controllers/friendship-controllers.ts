@@ -9,11 +9,12 @@ const friendshipService = new FriendshipService(
 
 export async function sendFriendshipRequest(req: Request, res: Response) {
     const friendshipRequestSchema = z.object({
-        senderId: z.int(),
         receiverId: z.int(),
     });
 
-    const { senderId, receiverId } = friendshipRequestSchema.parse(req.body);
+    const { receiverId } = friendshipRequestSchema.parse(req.body);
+
+    const senderId = req.user!.id;
 
     const requestOrFriendship = await friendshipService.sendRequest(
         senderId,
