@@ -1,5 +1,6 @@
+import { FriendshipRequestStatus } from "../../generated/prisma/enums";
 import { IFriendshipRepository } from "../repositories/friendship-repository";
-import { InvalidRequest } from "../utils/errors/error";
+import { InvalidRequest, NotFound } from "../utils/errors/error";
 import {
     FriendshipAlreadyExists,
     FriendshipRequestAlreadyExists,
@@ -16,50 +17,10 @@ export class FriendshipService {
             );
         }
 
-        const friendshipRequest =
-            await this.friendshipRepository.getRequestBySenderIdAndReceiverId(
-                senderId,
-                receiverId,
-            );
-        if (friendshipRequest && friendshipRequest.status === "PENDING") {
-            throw new FriendshipRequestAlreadyExists();
-        }
-        if (
-            friendshipRequest &&
-            friendshipRequest.status === "REJECTED"
-        ) {
-            const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
-            if (Date.now() - friendshipRequest.createdAt.getTime() < oneWeekInMs) { // TODO: Criar um updated at e verificar ele
-                throw new FriendshipRequestBlocked();
-            }
-
-            const newFriendshipRequest = await this.friendshipRepository.changeRequestStatus(friendshipRequest.id, "PENDING");
-
-            return { ...newFriendshipRequest, type: "request" } as const;
-        }
-
         const friend1Id = Math.min(senderId, receiverId);
         const friend2Id = Math.max(senderId, receiverId);
 
-        const reverseFriendshipRequest =
-            await this.friendshipRepository.getRequestBySenderIdAndReceiverId(
-                receiverId,
-                senderId,
-            );
-        if (
-            reverseFriendshipRequest &&
-            reverseFriendshipRequest.status === "PENDING"
-        ) {
-            const friendship = await this.createFriendship(
-                friend1Id,
-                friend2Id,
-                reverseFriendshipRequest.id,
-            );
-            return { ...friendship, type: "friendship" } as const;
-        }
-
-        // Todo: verificar se a amizade não foi encerrada
-        const friendship = await this.friendshipRepository.getFriendship(
+        const friendship = await this.friendshipRepository.getActiveFriendship(
             friend1Id,
             friend2Id,
         );
@@ -67,12 +28,42 @@ export class FriendshipService {
             throw new FriendshipAlreadyExists();
         }
 
-        if (friendshipRequest && friendshipRequest.status === "ACCEPTED") {
-            await this.friendshipRepository.changeRequestStatus(
-                friendshipRequest.id,
-                "REJECTED",
+        const friendshipRequest =
+            await this.friendshipRepository.getLatestRequestByUsers(
+                senderId,
+                receiverId,
             );
-            throw new FriendshipRequestBlocked();
+
+        const isReverseRequestPending =
+            friendshipRequest &&
+            friendshipRequest?.senderId === receiverId &&
+            FriendshipRequestStatus.PENDING;
+        if (isReverseRequestPending) {
+            const friendship = await this.createFriendship(
+                friendshipRequest.id,
+            );
+            return { ...friendship, type: "friendship" } as const;
+        }
+
+        if (
+            friendshipRequest &&
+            friendshipRequest.status === FriendshipRequestStatus.PENDING
+        ) {
+            throw new FriendshipRequestAlreadyExists();
+        }
+
+        if (
+            friendshipRequest &&
+            friendshipRequest.status === FriendshipRequestStatus.REJECTED
+        ) {
+            const oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+            const lastRequestIsRecent =
+                Date.now() - friendshipRequest.updatedAt.getTime() <
+                oneWeekInMs;
+
+            if (lastRequestIsRecent) {
+                throw new FriendshipRequestBlocked();
+            }
         }
 
         const newRequest = await this.friendshipRepository.createRequest(
@@ -83,26 +74,22 @@ export class FriendshipService {
         return { ...newRequest, type: "request" } as const;
     }
 
-    async createFriendship(
-        friend1Id: number,
-        friend2Id: number,
-        friendshipRequestId: number,
-    ) {
-        // Todo: Transformar em uma transação só
-        // Todo: verificar se o request de fato tem os usuários enviados
-        await this.friendshipRepository.changeRequestStatus(
-            friendshipRequestId,
-            "ACCEPTED",
-        );
+    async createFriendship(friendshipRequestId: number) {
+        const friendshipRequest =
+            await this.friendshipRepository.getRequestById(friendshipRequestId);
 
-        const friendship = await this.friendshipRepository.getFriendship(
-            friend1Id,
-            friend2Id,
-        );
-        if (friendship) {
-            throw new FriendshipAlreadyExists();
+        if (!friendshipRequest) {
+            throw new NotFound("Pedido de amizade não encontrado!");
         }
 
-        return this.friendshipRepository.createFriendship(friend1Id, friend2Id);
+        if (friendshipRequest.status !== FriendshipRequestStatus.PENDING) {
+            throw new InvalidRequest(
+                "Essa solicitação não pode mais ser aceita.",
+            );
+        }
+
+        return this.friendshipRepository.acceptRequestAndCreateFriendship(
+            friendshipRequest,
+        );
     }
 }

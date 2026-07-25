@@ -38,21 +38,14 @@ export async function sendFriendshipRequest(req: Request, res: Response) {
 
 export async function acceptFriendshipRequest(req: Request, res: Response) {
     const friendshipRequestSchema = z.object({
-        user1Id: z.int(),
-        user2Id: z.int(),
         requestId: z.int(),
     });
 
-    const { user1Id, user2Id, requestId } = friendshipRequestSchema.parse(
+    const { requestId } = friendshipRequestSchema.parse(
         req.body,
     );
 
-    const friend1Id = Math.min(user1Id, user2Id);
-    const friend2Id = Math.max(user1Id, user2Id);
-
     const friendship = await friendshipService.createFriendship(
-        friend1Id,
-        friend2Id,
         requestId,
     );
 

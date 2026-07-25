@@ -1,5 +1,6 @@
 import { FriendshipRequestStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
+import { FriendshipAlreadyExists } from "../../utils/errors/friendship-errors";
 import { IFriendshipRepository } from "../friendship-repository";
 
 export default class PrismaFriendshipRepository implements IFriendshipRepository {
@@ -7,13 +8,22 @@ export default class PrismaFriendshipRepository implements IFriendshipRepository
         return prisma.friendshipRequest.findUnique({ where: { id } });
     }
 
-    getRequestBySenderIdAndReceiverId(senderId: number, receiverId: number) {
-        return prisma.friendshipRequest.findUnique({
+    getLatestRequestByUsers(user1Id: number, user2Id: number) {
+        return prisma.friendshipRequest.findFirst({
             where: {
-                receiverId_senderId: {
-                    receiverId,
-                    senderId,
-                },
+                OR: [
+                    {
+                        senderId: user1Id,
+                        receiverId: user2Id,
+                    },
+                    {
+                        senderId: user2Id,
+                        receiverId: user1Id,
+                    },
+                ],
+            },
+            orderBy: {
+                createdAt: "desc",
             },
         });
     }
@@ -31,10 +41,12 @@ export default class PrismaFriendshipRepository implements IFriendshipRepository
         });
     }
 
-    getFriendship(friend1Id: number, friend2Id: number) {
-        return prisma.friendship.findUnique({
+    getActiveFriendship(friend1Id: number, friend2Id: number) {
+        return prisma.friendship.findFirst({
             where: {
-                user1Id_user2Id: { user1Id: friend1Id, user2Id: friend2Id },
+                user1Id: friend1Id,
+                user2Id: friend2Id,
+                endedAt: null,
             },
         });
     }
@@ -45,11 +57,61 @@ export default class PrismaFriendshipRepository implements IFriendshipRepository
         });
     }
 
-    excludeFriendship(friend1Id: number, friend2Id: number) {
-        return prisma.friendship.delete({
+    endFriendship(friendshipId: number) {
+        return prisma.friendship.update({
             where: {
-                user1Id_user2Id: { user1Id: friend1Id, user2Id: friend2Id },
+                id: friendshipId,
+                endedAt: null,
             },
+            data: {
+                endedAt: new Date(),
+            },
+        });
+    }
+
+    acceptRequestAndCreateFriendship(friendshipRequest: {
+        id: number;
+        senderId: number;
+        receiverId: number;
+    }) {
+        const friend1Id = Math.min(
+            friendshipRequest.senderId,
+            friendshipRequest.receiverId,
+        );
+
+        const friend2Id = Math.max(
+            friendshipRequest.senderId,
+            friendshipRequest.receiverId,
+        );
+
+        return prisma.$transaction(async (tx) => {
+            const friendship = await tx.friendship.findFirst({
+                where: {
+                    user1Id: friend1Id,
+                    user2Id: friend2Id,
+                    endedAt: null,
+                },
+            });
+
+            if (friendship) {
+                throw new FriendshipAlreadyExists();
+            }
+
+            await tx.friendshipRequest.update({
+                where: {
+                    id: friendshipRequest.id,
+                },
+                data: {
+                    status: FriendshipRequestStatus.ACCEPTED,
+                },
+            });
+
+            return tx.friendship.create({
+                data: {
+                    user1Id: friend1Id,
+                    user2Id: friend2Id,
+                },
+            });
         });
     }
 }
