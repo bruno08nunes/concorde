@@ -15,6 +15,7 @@ export default class PrismaFriendshipRepository implements IFriendshipRepository
                     username: string;
                     email: string;
                     profilePictureId: number | null;
+                    profilePictureUrl: string | null;
                     createdAt: Date;
                     updatedAt: Date;
                     deletedAt: Date | null;
@@ -32,6 +33,7 @@ export default class PrismaFriendshipRepository implements IFriendshipRepository
                         'id', u.id,
                         'username', u.username,
                         'profilePictureId', u."profilePictureId",
+                        'profilePictureUrl', pf.url,
                         'createdAt', u."createdAt",
                         'updatedAt', u."updatedAt",
                         'deletedAt', u."deletedAt"
@@ -42,6 +44,8 @@ export default class PrismaFriendshipRepository implements IFriendshipRepository
                         WHEN f."user1Id" = ${userId} THEN f."user2Id"
                         ELSE f."user1Id"
                     END
+                LEFT JOIN "File" pf
+                    ON pf.id = u."profilePictureId"
                 WHERE
                     f."user1Id" = ${userId}
                     OR f."user2Id" = ${userId}

@@ -7,6 +7,7 @@ export interface Friendship {
         username: string;
         email: string;
         profilePictureId: number | null;
+        profilePictureUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
