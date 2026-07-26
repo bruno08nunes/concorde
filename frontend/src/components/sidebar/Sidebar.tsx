@@ -1,9 +1,10 @@
-import { Bell, Search, Settings } from "lucide-react";
+import { Bell, Settings } from "lucide-react";
 import IconButton from "../IconButton";
 import IconLink from "../IconLink";
 import FriendList from "./FriendList";
 import { useState } from "react";
 import UserList from "./UserList";
+import SidebarHeader from "./SidebarHeader";
 
 export default function Sidebar() {
     const [search, setSearch] = useState("");
@@ -11,34 +12,15 @@ export default function Sidebar() {
 
     return (
         <aside className="bg-slate-800 rounded-lg p-4 flex flex-col gap-4">
-            <div className="flex gap-2">
-                <span className="flex border rounded-lg p-1 focus-within:outline-1 outline-white items-center">
-                    <input
-                        type="text"
-                        className="focus:outline-0"
-                        id="search"
-                        onChange={(e) => setSearch(e.target.value)}
-                        maxLength={20}
-                    />
-                    <label htmlFor="search" className="cursor-pointer">
-                        <Search />
-                    </label>
-                </span>
-                <button
-                    className={`py-1 px-2 rounded-xl cursor-pointer hover:bg-indigo-600 border-3 border-indigo-600 duration-[.4s] ${isFriendListActive ? "bg-indigo-600" : ""}`}
-                    onClick={() => setIsFriendListActive(() => true)}
-                >
-                    Amigos
-                </button>
-                <button
-                    className={`py-1 px-2 rounded-xl cursor-pointer hover:bg-indigo-600 border-3 border-indigo-600 duration-[.4s] ${!isFriendListActive ? "bg-indigo-600" : ""}`}
-                    onClick={() => setIsFriendListActive(() => false)}
-                >
-                    Usuários
-                </button>
-            </div>
+            <SidebarHeader
+                setSearch={setSearch}
+                setIsFriendListActive={setIsFriendListActive}
+                isFriendListActive={isFriendListActive}
+            />
             <hr />
-            <h2 className="text-xl text-center">{isFriendListActive ? "Amigos" : "Usuários"}</h2>
+            <h2 className="text-xl text-center">
+                {isFriendListActive ? "Amigos" : "Usuários"}
+            </h2>
             {isFriendListActive ? (
                 <FriendList search={search} />
             ) : (
