@@ -1,9 +1,13 @@
 import { Bell, Search, Settings } from "lucide-react";
 import IconButton from "../IconButton";
 import IconLink from "../IconLink";
+import FriendList from "./FriendList";
+import { useState } from "react";
 import UserList from "./UserList";
 
 export default function Sidebar() {
+    const [search, setSearch] = useState("");
+    const [isFriendListActive, setIsFriendListActive] = useState(true);
 
     return (
         <aside className="bg-slate-800 rounded-lg p-4 flex flex-col gap-4">
@@ -13,17 +17,33 @@ export default function Sidebar() {
                         type="text"
                         className="focus:outline-0"
                         id="search"
+                        onChange={(e) => setSearch(e.target.value)}
+                        maxLength={20}
                     />
                     <label htmlFor="search" className="cursor-pointer">
                         <Search />
                     </label>
                 </span>
-                <button className="py-1 px-2 rounded-xl cursor-pointer hover:bg-indigo-600 border-3 border-indigo-600 duration-[.4s]">
-                    Adicionar Amigo
+                <button
+                    className={`py-1 px-2 rounded-xl cursor-pointer hover:bg-indigo-600 border-3 border-indigo-600 duration-[.4s] ${isFriendListActive ? "bg-indigo-600" : ""}`}
+                    onClick={() => setIsFriendListActive(() => true)}
+                >
+                    Amigos
+                </button>
+                <button
+                    className={`py-1 px-2 rounded-xl cursor-pointer hover:bg-indigo-600 border-3 border-indigo-600 duration-[.4s] ${!isFriendListActive ? "bg-indigo-600" : ""}`}
+                    onClick={() => setIsFriendListActive(() => false)}
+                >
+                    Usuários
                 </button>
             </div>
             <hr />
-            <UserList />
+            <h2 className="text-xl text-center">{isFriendListActive ? "Amigos" : "Usuários"}</h2>
+            {isFriendListActive ? (
+                <FriendList search={search} />
+            ) : (
+                <UserList username={search} />
+            )}
             <hr />
             <div className="flex items-center gap-4 p-1">
                 <img
