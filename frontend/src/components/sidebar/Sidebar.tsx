@@ -1,9 +1,10 @@
 import { Bell, Search, Settings } from "lucide-react";
-import UserListItem from "./UserListItem";
 import IconButton from "../IconButton";
 import IconLink from "../IconLink";
+import UserList from "./UserList";
 
 export default function Sidebar() {
+
     return (
         <aside className="bg-slate-800 rounded-lg p-4 flex flex-col gap-4">
             <div className="flex gap-2">
@@ -22,16 +23,7 @@ export default function Sidebar() {
                 </button>
             </div>
             <hr />
-            <div className="flex-1 flex flex-col gap-3 overflow-auto">
-                <UserListItem
-                    imgURL="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
-                    name="Nome"
-                />
-                <UserListItem
-                    imgURL="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
-                    name="Nome"
-                />
-            </div>
+            <UserList />
             <hr />
             <div className="flex items-center gap-4 p-1">
                 <img
