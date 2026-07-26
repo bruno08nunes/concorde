@@ -2,8 +2,11 @@ import { LucideUserPlus2, Mic, PhoneCall, Plus, Video } from "lucide-react";
 import IconButton from "../components/IconButton";
 import Message from "../components/messages/Message";
 import TextArea from "../components/form/TextArea";
+import { useParams } from "react-router-dom";
 
 export default function MessagesPage() {
+    const { username } = useParams();
+
     return (
         <>
             <header className="flex items-center p-3 justify-between">
@@ -13,7 +16,7 @@ export default function MessagesPage() {
                         alt=""
                         className="w-12 rounded-full object-cover aspect-square"
                     />
-                    <span className="text-xl flex-1">Nome</span>
+                    <span className="text-xl flex-1">{username}</span>
                 </span>
                 <div className="flex gap-3">
                     <IconButton>

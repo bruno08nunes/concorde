@@ -43,6 +43,7 @@ export default function FriendList({ search }: { search: string }) {
             {filteredFriends?.map((friendship) => (
                 <UserListItem
                     key={friendship.friendshipId}
+                    baseURL="/amigos/"
                     imgURL={
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
                     }

@@ -1,15 +1,8 @@
-import { Outlet } from "react-router-dom";
-import Sidebar from "../components/sidebar/Sidebar";
-
-function App() {
+export default function Home() {
     return (
-        <div className="flex p-3 h-svh gap-6 text-white">
-            <Sidebar />
-            <section className="flex-1 bg-slate-800 flex flex-col rounded-lg">
-                <Outlet />
-            </section>
-        </div>
+        <section className="flex flex-col gap-4 p-3 justify-center items-center h-full">
+            <h1 className="text-3xl">Bem-vindo ao Concorde!</h1>
+            <p className="text-xl">Faça novas amizades!</p>
+        </section>
     );
 }
-
-export default App;
