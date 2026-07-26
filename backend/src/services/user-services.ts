@@ -9,6 +9,10 @@ import {
 export class UserService {
     constructor(private userRepository: IUserRepository) {}
 
+    async searchUsersByUsername(username: string) {
+        return this.userRepository.searchUsersByUsername(username);
+    }
+
     async login(email: string, password: string) {
         const user = await this.userRepository.findByEmail(email);
 

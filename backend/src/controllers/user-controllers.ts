@@ -6,6 +6,29 @@ import { signJwt } from "../utils/jwt";
 
 const userService = new UserService(new PrismaUserRepository());
 
+export async function searchUsersByUsername(req: Request, res: Response) {
+    const searchBodySchema = z.object({
+        username: z
+            .string()
+            .min(3, "Seu nome de usuário deve ter no mínimo 3 caracteres")
+            .max(20, "Tamanho máximo de nome excedido (20)")
+            .regex(
+                /^[a-zA-Z0-9_]+$/,
+                "Seu nome deve conter apenas letras, números ou underlines (_)",
+            )
+    });
+
+    const { username } = searchBodySchema.parse(req.params);
+
+    const users = await userService.searchUsersByUsername(username);
+
+    res.json({
+        success: true,
+        message: "Usuários encontrados.",
+        data: users,
+    });
+}
+
 export async function loginController(req: Request, res: Response) {
     const authenticationBodySchema = z.object({
         email: z.email("Email inválido"),
