@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+    getUserByUsername,
     loginController,
     registerController,
     searchUsersByUsername,
@@ -7,6 +8,7 @@ import {
 
 const userRoutes = Router();
 
+userRoutes.get("/user/:username", getUserByUsername);
 userRoutes.get("/users/:username", searchUsersByUsername);
 userRoutes.post("/auth/login", loginController);
 userRoutes.post("/auth/register", registerController);

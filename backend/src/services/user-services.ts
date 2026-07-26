@@ -9,6 +9,10 @@ import {
 export class UserService {
     constructor(private userRepository: IUserRepository) {}
 
+    async getUserByUsername(username: string) {
+        return this.userRepository.findByUsername(username);
+    }
+
     async searchUsersByUsername(username: string) {
         return this.userRepository.searchUsersByUsername(username);
     }

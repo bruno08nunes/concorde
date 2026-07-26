@@ -12,6 +12,24 @@ export default class PrismaUserRepository implements IUserRepository {
         });
     }
 
+    findByUsername(username: string) {
+        return prisma.user.findUnique({
+            where: {
+                username,
+            },
+            omit: {
+                password: true,
+            },
+            include: {
+                profilePicture: {
+                    select: {
+                        url: true,
+                    },
+                },
+            },
+        });
+    }
+
     searchUsersByUsername(username: string) {
         return prisma.$queryRaw<
             {
@@ -41,14 +59,6 @@ export default class PrismaUserRepository implements IUserRepository {
                 u.username
             LIMIT 20;
         `;
-    }
-
-    findByUsername(username: string) {
-        return prisma.user.findUnique({
-            where: {
-                username,
-            },
-        });
     }
 
     create(data: UserCreateInput): Promise<User> {
