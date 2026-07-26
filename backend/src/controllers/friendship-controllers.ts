@@ -1,11 +1,23 @@
 import { Request, Response } from "express";
-import z from "zod";
+import z, { success } from "zod";
 import { FriendshipService } from "../services/friendship-services";
 import PrismaFriendshipRepository from "../repositories/prisma/prisma-friendship-repository";
 
 const friendshipService = new FriendshipService(
     new PrismaFriendshipRepository(),
 );
+
+export async function getAllFriends(req: Request, res: Response) {
+    const userId = req.user!.id;
+
+    const friends = await friendshipService.getAllFriends(userId);
+
+    res.json({
+        message: "Amigos encontrados.",
+        success: true,
+        data: friends,
+    });
+}
 
 export async function sendFriendshipRequest(req: Request, res: Response) {
     const friendshipRequestSchema = z.object({
@@ -42,13 +54,9 @@ export async function acceptFriendshipRequest(req: Request, res: Response) {
         requestId: z.int(),
     });
 
-    const { requestId } = friendshipRequestSchema.parse(
-        req.body,
-    );
+    const { requestId } = friendshipRequestSchema.parse(req.body);
 
-    const friendship = await friendshipService.createFriendship(
-        requestId,
-    );
+    const friendship = await friendshipService.createFriendship(requestId);
 
     res.status(201).json({
         success: true,

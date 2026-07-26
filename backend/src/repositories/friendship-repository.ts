@@ -2,6 +2,7 @@ import {
     Friendship,
     FriendshipRequest,
     FriendshipRequestStatus,
+    User,
 } from "../../generated/prisma/browser";
 
 export interface IFriendshipRepository {
@@ -22,6 +23,16 @@ export interface IFriendshipRepository {
         friend1Id: number,
         friend2Id: number,
     ): Promise<Friendship | null>;
+    getFriends(
+        userId: number,
+    ): Promise<
+        {
+            friendshipId: number;
+            createdAt: Date;
+            endedAt: Date | null;
+            friend: Partial<User>;
+        }[]
+    >;
     createFriendship(friend1Id: number, friend2Id: number): Promise<Friendship>;
     endFriendship(friend1Id: number, friend2Id: number): Promise<Friendship>;
     acceptRequestAndCreateFriendship(friendshipRequest: {
