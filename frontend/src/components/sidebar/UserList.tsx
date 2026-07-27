@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import UserListItem from "./UserListItem";
 import { getUsersByUsername } from "../../api/users";
-import { useDebounce } from "../hooks/useDebounce";
+import { useDebounce } from "../../hooks/useDebounce";
 
 export default function UserList({ username }: { username: string }) {
     const debouncedUsername = useDebounce(username, 200);
