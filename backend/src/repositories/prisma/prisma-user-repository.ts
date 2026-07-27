@@ -12,8 +12,8 @@ export default class PrismaUserRepository implements IUserRepository {
         });
     }
 
-    findByUsername(username: string) {
-        return prisma.user.findUnique({
+    async findByUsername(username: string, userId?: number) {
+        const user = await prisma.user.findUnique({
             where: {
                 username,
             },
@@ -28,6 +28,41 @@ export default class PrismaUserRepository implements IUserRepository {
                 },
             },
         });
+
+        if (!user) {
+            return null;
+        }
+
+        if (!userId) {
+            return {
+                ...user,
+                isFriend: false,
+            };
+        }
+
+        const friendship = await prisma.friendship.findFirst({
+            where: {
+                endedAt: null,
+                OR: [
+                    {
+                        user1Id: userId,
+                        user2Id: user.id,
+                    },
+                    {
+                        user1Id: user.id,
+                        user2Id: userId,
+                    },
+                ],
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        return {
+            ...user,
+            isFriend: friendship !== null,
+        };
     }
 
     searchUsersByUsername(username: string) {

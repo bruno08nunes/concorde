@@ -9,8 +9,8 @@ import {
 export class UserService {
     constructor(private userRepository: IUserRepository) {}
 
-    async getUserByUsername(username: string) {
-        return this.userRepository.findByUsername(username);
+    async getUserByUsername(username: string, userId: number) {
+        return this.userRepository.findByUsername(username, userId);
     }
 
     async searchUsersByUsername(username: string) {

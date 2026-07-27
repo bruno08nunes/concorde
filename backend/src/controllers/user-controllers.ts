@@ -19,8 +19,9 @@ export async function getUserByUsername(req: Request, res: Response) {
     });
 
     const { username } = searchBodySchema.parse(req.params);
+    const userId = req.user!.id;
 
-    const user = await userService.getUserByUsername(username);
+    const user = await userService.getUserByUsername(username, userId);
 
     res.json({
         success: true,
