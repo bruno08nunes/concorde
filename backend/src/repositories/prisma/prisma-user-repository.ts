@@ -62,6 +62,7 @@ export default class PrismaUserRepository implements IUserRepository {
         return {
             ...user,
             isFriend: friendship !== null,
+            isYou: userId === user.id,
         };
     }
 

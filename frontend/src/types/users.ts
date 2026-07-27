@@ -16,4 +16,5 @@ export interface User {
     deletedAt: Date | null;
     updatedAt: Date;
     isFriend: boolean;
+    isYou: boolean;
 }
