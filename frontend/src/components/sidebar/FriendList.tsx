@@ -2,9 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getFriends } from "../../api/friendships";
 import { useAuthStore } from "../../stores/authStore";
 import UserListItem from "./UserListItem";
+import { useNavigate } from "react-router-dom";
 
 export default function FriendList({ search }: { search: string }) {
     const { token } = useAuthStore();
+    const navigate = useNavigate();
+    const logout = useAuthStore((state) => state.logout);
 
     const {
         data: friends,
@@ -14,6 +17,11 @@ export default function FriendList({ search }: { search: string }) {
         queryKey: ["friends"],
         queryFn: () => getFriends(token!),
     });
+
+    if (error?.message === "Token inválido.") {
+        logout();
+        navigate("/login", { replace: true });
+    }
 
     if (isLoading) {
         return (
@@ -29,7 +37,7 @@ export default function FriendList({ search }: { search: string }) {
     if (error) {
         return <p className="flex-1 overflow-auto">Erro ao carregar amigos!</p>;
     }
-    
+
     if (friends?.length === 0) {
         return <p className="flex-1 overflow-auto">Nenhum amigo :(</p>;
     }

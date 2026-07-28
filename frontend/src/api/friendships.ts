@@ -7,6 +7,10 @@ export async function getFriends(token: string) {
         },
     });
 
+    if (res.status === 401) {
+        throw new Error("Token inválido.")
+    }
+
     if (!res.ok) {
         throw new Error("Erro ao buscar amigos.");
     }
