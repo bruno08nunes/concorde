@@ -1,10 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { getUserByUsername } from "../api/users";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import ProfilePicture from "../components/ProfilePicture";
 import LinkButton from "../components/LinkButton";
 import Button from "../components/form/Button";
+import { sendFriendshipRequest } from "../api/friendships";
+import { toast } from "sonner";
 
 export default function UserInfo() {
     const { username } = useParams();
@@ -17,6 +19,19 @@ export default function UserInfo() {
     } = useQuery({
         queryKey: ["user-info", username],
         queryFn: () => getUserByUsername(username!, token!),
+    });
+
+    const mutation = useMutation({
+        mutationFn: sendFriendshipRequest,
+        onSuccess(data) {
+            console.log(data);
+        },
+        onError(err) {
+            toast(err.message, {
+                style: { color: "red" },
+                position: "top-center",
+            });
+        },
     });
 
     if (isLoading) {
@@ -48,7 +63,14 @@ export default function UserInfo() {
                 text="Ir Para Conversa"
             />
         ),
-        user: <Button onClick={() => {}} text="Adicionar Amigo" />,
+        user: (
+            <Button
+                onClick={() =>
+                    mutation.mutate({ receiverId: user.id, token: token! })
+                }
+                text="Adicionar Amigo"
+            />
+        ),
         you: <LinkButton to={"/"} text="Configurações" />,
     };
     const activeButton = user.isYou

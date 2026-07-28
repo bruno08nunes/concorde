@@ -8,7 +8,7 @@ export async function getFriends(token: string) {
     });
 
     if (res.status === 401) {
-        throw new Error("Token inválido.")
+        throw new Error("Token inválido.");
     }
 
     if (!res.ok) {
@@ -18,6 +18,39 @@ export async function getFriends(token: string) {
     const data: {
         success: boolean;
         data: Friendship[];
+        message: string;
+    } = await res.json();
+
+    return data.data;
+}
+
+export async function sendFriendshipRequest({
+    receiverId,
+    token,
+}: {
+    receiverId: number;
+    token: string;
+}) {
+    const res = await fetch("http://localhost:3333/friendship/request", {
+        method: "POST",
+        body: JSON.stringify({ receiverId }),
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+        },
+    });
+
+    if (res.status === 409) {
+        throw new Error("Você já adicionou esse usuário!")
+    }
+
+    if (!res.ok) {
+        throw new Error("Erro ao buscar amigos.");
+    }
+
+    const data: {
+        success: boolean;
+        data: Friendship;
         message: string;
     } = await res.json();
 

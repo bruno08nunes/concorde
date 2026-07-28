@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/sidebar/Sidebar";
+import { Toaster } from "sonner";
 
 function App() {
     return (
@@ -8,6 +9,7 @@ function App() {
             <section className="flex-1 bg-slate-800 flex flex-col rounded-lg">
                 <Outlet />
             </section>
+            <Toaster />
         </div>
     );
 }
