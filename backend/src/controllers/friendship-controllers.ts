@@ -54,10 +54,11 @@ export async function acceptFriendshipRequest(req: Request, res: Response) {
     const friendshipRequestSchema = z.object({
         requestId: z.int(),
     });
+    
+    const { requestId } = friendshipRequestSchema.parse({requestId: Number(req.params.requestId)});
+    const receiverId = req.user?.id;
 
-    const { requestId } = friendshipRequestSchema.parse(req.body);
-
-    const friendship = await friendshipService.createFriendship(requestId);
+    const friendship = await friendshipService.createFriendship(requestId, receiverId!);
 
     res.status(201).json({
         success: true,

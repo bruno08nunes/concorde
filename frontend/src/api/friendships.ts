@@ -77,7 +77,37 @@ export async function sendFriendshipRequest({
     }
 
     if (!res.ok) {
-        throw new Error("Erro ao buscar amigos.");
+        throw new Error("Erro ao adicionar amigo.");
+    }
+
+    const data: {
+        success: boolean;
+        data: Friendship;
+        message: string;
+    } = await res.json();
+
+    return data.data;
+}
+
+export async function acceptFriendshipRequest({
+    token,
+    requestId,
+}: {
+    token: string;
+    requestId: number;
+}) {
+    const res = await fetch(
+        "http://localhost:3333/friendship/request/" + requestId + "/accept",
+        {
+            method: "POST",
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        },
+    );
+
+    if (!res.ok) {
+        throw new Error("Não foi possível adicionar amigo.");
     }
 
     const data: {

@@ -1,5 +1,6 @@
 import { FriendshipRequestStatus } from "../../generated/prisma/enums";
 import { IFriendshipRepository } from "../repositories/friendship-repository";
+import { Unauthorized } from "../utils/errors/auth-errors";
 import { InvalidRequest, NotFound } from "../utils/errors/error";
 import {
     FriendshipAlreadyExists,
@@ -82,7 +83,7 @@ export class FriendshipService {
         return this.friendshipRepository.getFriends(userId);
     }
 
-    async createFriendship(friendshipRequestId: number) {
+    async createFriendship(friendshipRequestId: number, receiverId?: number) {
         const friendshipRequest =
             await this.friendshipRepository.getRequestById(friendshipRequestId);
 
@@ -94,6 +95,10 @@ export class FriendshipService {
             throw new InvalidRequest(
                 "Essa solicitação não pode mais ser aceita.",
             );
+        }
+
+        if (receiverId && friendshipRequest.receiverId !== receiverId) {
+            throw new Unauthorized();
         }
 
         return this.friendshipRepository.acceptRequestAndCreateFriendship(

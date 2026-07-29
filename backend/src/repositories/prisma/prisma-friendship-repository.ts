@@ -32,6 +32,7 @@ export default class PrismaFriendshipRepository implements IFriendshipRepository
         return prisma.friendshipRequest.findMany({
             where: {
                 receiverId: userId,
+                status: "PENDING"
             },
             include: {
                 sender: {
