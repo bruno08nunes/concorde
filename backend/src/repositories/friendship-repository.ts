@@ -11,6 +11,7 @@ export interface IFriendshipRepository {
         senderId: number,
         receiverId: number,
     ): Promise<FriendshipRequest | null>;
+    listPendingFriendRequests(userId: number): Promise<FriendshipRequest[]>;
     createRequest(
         senderId: number,
         receiverId: number,
@@ -23,9 +24,7 @@ export interface IFriendshipRepository {
         friend1Id: number,
         friend2Id: number,
     ): Promise<Friendship | null>;
-    getFriends(
-        userId: number,
-    ): Promise<
+    getFriends(userId: number): Promise<
         {
             friendshipId: number;
             createdAt: Date;

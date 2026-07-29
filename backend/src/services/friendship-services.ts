@@ -10,6 +10,10 @@ import {
 export class FriendshipService {
     constructor(private friendshipRepository: IFriendshipRepository) {}
 
+    async listPendingFriendRequests(userId: number) {
+        return this.friendshipRepository.listPendingFriendRequests(userId);
+    }
+
     async sendRequest(senderId: number, receiverId: number) {
         if (senderId === receiverId) {
             throw new InvalidRequest(

@@ -28,6 +28,24 @@ export default class PrismaFriendshipRepository implements IFriendshipRepository
         });
     }
 
+    listPendingFriendRequests(userId: number) {
+        return prisma.friendshipRequest.findMany({
+            where: {
+                receiverId: userId,
+            },
+            include: {
+                sender: {
+                    omit: {
+                        password: true,
+                    },
+                    include: {
+                        profilePicture: true,
+                    },
+                },
+            },
+        });
+    }
+
     createRequest(senderId: number, receiverId: number) {
         return prisma.friendshipRequest.create({
             data: { senderId, receiverId },

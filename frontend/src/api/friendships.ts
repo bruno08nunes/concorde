@@ -1,4 +1,5 @@
 import type { Friendship } from "../types/friendship";
+import type { User } from "../types/users";
 
 export async function getFriends(token: string) {
     const res = await fetch("http://localhost:3333/friendships", {
@@ -24,6 +25,37 @@ export async function getFriends(token: string) {
     return data.data;
 }
 
+export async function listPendingFriendshipRequests({
+    token,
+}: {
+    token: string;
+}) {
+    const res = await fetch("http://localhost:3333/friendship/requests", {
+        headers: {
+            Authorization: "Bearer " + token,
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error("Erro ao buscar notificações.");
+    }
+
+    const data: {
+        success: boolean;
+        data: {
+            createdAt: Date;
+            id: number;
+            receiverId: number;
+            senderId: number;
+            sender: User;
+            updatedAt: Date;
+        }[];
+        message: string;
+    } = await res.json();
+
+    return data.data;
+}
+
 export async function sendFriendshipRequest({
     receiverId,
     token,
@@ -41,7 +73,7 @@ export async function sendFriendshipRequest({
     });
 
     if (res.status === 409) {
-        throw new Error("Você já adicionou esse usuário!")
+        throw new Error("Você já adicionou esse usuário!");
     }
 
     if (!res.ok) {

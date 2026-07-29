@@ -7,15 +7,16 @@ const friendshipService = new FriendshipService(
     new PrismaFriendshipRepository(),
 );
 
-export async function getAllFriends(req: Request, res: Response) {
+export async function listPendingFriendRequests(req: Request, res: Response) {
     const userId = req.user!.id;
 
-    const friends = await friendshipService.getAllFriends(userId);
+    const requestOrFriendship =
+        await friendshipService.listPendingFriendRequests(userId);
 
-    res.json({
-        message: "Amigos encontrados.",
+    res.status(201).json({
         success: true,
-        data: friends,
+        message: "Pedido de amizade enviado!",
+        data: requestOrFriendship,
     });
 }
 
@@ -62,5 +63,17 @@ export async function acceptFriendshipRequest(req: Request, res: Response) {
         success: true,
         message: "Amizade criada",
         data: friendship,
+    });
+}
+
+export async function getAllFriends(req: Request, res: Response) {
+    const userId = req.user!.id;
+
+    const friends = await friendshipService.getAllFriends(userId);
+
+    res.json({
+        message: "Amigos encontrados.",
+        success: true,
+        data: friends,
     });
 }
