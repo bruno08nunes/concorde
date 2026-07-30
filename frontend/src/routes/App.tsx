@@ -1,8 +1,11 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/sidebar/Sidebar";
 import { Toaster } from "sonner";
+import { useSocket } from "../hooks/useSocket";
 
 function App() {
+    useSocket();
+
     return (
         <div className="flex p-3 h-svh gap-6 text-white">
             <Sidebar />
