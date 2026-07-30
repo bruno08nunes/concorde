@@ -46,6 +46,10 @@ export default function FriendList({ search }: { search: string }) {
         friendship.friend.username.includes(search),
     );
 
+    if (filteredFriends?.length === 0) {
+        return <p className="flex-1 overflow-auto">Nenhum amigo encontrado</p>;
+    }
+
     return (
         <ul className="flex-1 flex flex-col gap-3 overflow-auto">
             {filteredFriends?.map((friendship) => (

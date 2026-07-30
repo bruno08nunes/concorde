@@ -1,5 +1,4 @@
 import { Bell, Settings } from "lucide-react";
-import IconButton from "../IconButton";
 import IconLink from "../IconLink";
 import FriendList from "./FriendList";
 import { useState } from "react";

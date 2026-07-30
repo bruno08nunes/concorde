@@ -11,6 +11,7 @@ import MessagesPage from "./routes/messagesPage.tsx";
 import NotificationPage from "./routes/notificationPage.tsx";
 import Home from "./routes/home.tsx";
 import UserInfo from "./routes/userInfo.tsx";
+import ConfigPage from "./routes/config.tsx";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
             {
                 path: "/notificacoes",
                 element: <NotificationPage />
+            },
+            {
+                path: "/configuracoes",
+                element: <ConfigPage />
             }
         ],
     },
