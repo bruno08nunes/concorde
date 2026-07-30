@@ -1,4 +1,21 @@
 import { env } from "../lib/env";
+import type { User } from "../types/users";
+
+export async function getMe(token: string) {
+    const res = await fetch("http://localhost:3333/auth/me", {
+        headers: {
+            Authorization: "Bearer " + token
+        }
+    })
+
+    if (!res.ok) {
+        throw new Error("Não foi possível encontrar sua conta");
+    }
+
+    const result = await res.json();
+
+    return result.data as User;
+}
 
 export async function login(data: { email: string; password: string }) {
     try {

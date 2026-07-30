@@ -5,10 +5,26 @@ import FriendList from "./FriendList";
 import { useState } from "react";
 import UserList from "./UserList";
 import SidebarHeader from "./SidebarHeader";
+import { useAuthStore } from "../../stores/authStore";
+import { useQuery } from "@tanstack/react-query";
+import { getMe } from "../../api/auth";
+import { useNavigate } from "react-router-dom";
+import ProfilePicture from "../ProfilePicture";
 
 export default function Sidebar() {
     const [search, setSearch] = useState("");
     const [isFriendListActive, setIsFriendListActive] = useState(true);
+
+    const { token } = useAuthStore();
+    const { data, error } = useQuery({
+        queryKey: ["me"],
+        queryFn: () => getMe(token!),
+    });
+
+    const navigate = useNavigate();
+    if (error) {
+        navigate("/login");
+    }
 
     return (
         <aside className="bg-slate-800 rounded-lg p-4 flex flex-col gap-4">
@@ -28,18 +44,14 @@ export default function Sidebar() {
             )}
             <hr />
             <div className="flex items-center gap-4 p-1">
-                <img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
-                    alt=""
-                    className="w-12 rounded-full object-cover aspect-square"
-                />
-                <span className="text-xl flex-1">Nome</span>
+                <ProfilePicture imgURL={data && data.profilePicture?.url || null} />
+                <span className="text-xl flex-1">{data?.username}</span>
                 <IconLink to="/notificacoes">
                     <Bell />
                 </IconLink>
-                <IconButton>
+                <IconLink to="/configuracoes">
                     <Settings />
-                </IconButton>
+                </IconLink>
             </div>
         </aside>
     );

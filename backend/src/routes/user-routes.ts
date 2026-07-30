@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+    getMe,
     getUserByUsername,
     loginController,
     registerController,
@@ -9,11 +10,10 @@ import { authMiddleware } from "../middlewares/auth-middleware";
 
 const userRoutes = Router();
 
+userRoutes.get("/auth/me", authMiddleware, getMe);
 userRoutes.get("/user/:username", authMiddleware, getUserByUsername);
 userRoutes.get("/users/:username", searchUsersByUsername);
 userRoutes.post("/auth/login", loginController);
 userRoutes.post("/auth/register", registerController);
-
-// userRoutes.get("/auth/me");
 
 export default userRoutes;

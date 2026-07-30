@@ -4,6 +4,24 @@ import { prisma } from "../../lib/prisma";
 import { IUserRepository } from "../user-repository";
 
 export default class PrismaUserRepository implements IUserRepository {
+    findById(id: number) {
+        return prisma.user.findUnique({
+            where: {
+                id,
+            },
+            omit: {
+                password: true,
+            },
+            include: {
+                profilePicture: {
+                    select: {
+                        url: true,
+                    },
+                },
+            },
+        });
+    }
+
     findByEmail(email: string) {
         return prisma.user.findUnique({
             where: {

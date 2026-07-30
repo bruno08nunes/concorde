@@ -6,6 +6,18 @@ import { signJwt } from "../utils/jwt";
 
 const userService = new UserService(new PrismaUserRepository());
 
+export async function getMe(req: Request, res: Response) {
+    const userId = req.user?.id;
+
+    const user = await userService.getUserById(userId!);
+
+    res.json({
+        success: true,
+        message: "Usuário encontrado.",
+        data: user,
+    });
+}
+
 export async function getUserByUsername(req: Request, res: Response) {
     const searchBodySchema = z.object({
         username: z

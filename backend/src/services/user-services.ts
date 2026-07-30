@@ -3,11 +3,22 @@ import { UserCreateInput } from "../../generated/prisma/models";
 import { comparePassword, hashPassword } from "../utils/crypto";
 import {
     InvalidCredentialsError,
+    NotFound,
     UserAlreadyExistsError,
 } from "../utils/errors/error";
 
 export class UserService {
     constructor(private userRepository: IUserRepository) {}
+
+    async getUserById(id: number) {
+        const user = await this.userRepository.findById(id);
+
+        if (!user) {
+            throw new NotFound("Usuário não encontrado.");
+        }
+
+        return user;
+    }
 
     async getUserByUsername(username: string, userId: number) {
         return this.userRepository.findByUsername(username, userId);
