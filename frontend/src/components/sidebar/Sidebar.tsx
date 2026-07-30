@@ -14,15 +14,17 @@ export default function Sidebar() {
     const [search, setSearch] = useState("");
     const [isFriendListActive, setIsFriendListActive] = useState(true);
 
-    const { token } = useAuthStore();
+    const { token, logout } = useAuthStore();
     const { data, error } = useQuery({
         queryKey: ["me"],
         queryFn: () => getMe(token!),
+        retry: 0,
     });
 
     const navigate = useNavigate();
-    if (error) {
-        navigate("/login");
+    if (error?.message === "Token inválido.") {
+        logout();
+        navigate("/login", { replace: true });
     }
 
     return (

@@ -8,6 +8,10 @@ export async function getMe(token: string) {
         }
     })
 
+    if (res.status === 401) {
+        throw new Error("Token inválido.");
+    }
+
     if (!res.ok) {
         throw new Error("Não foi possível encontrar sua conta");
     }
