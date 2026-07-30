@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { getUserByUsername } from "../api/users";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ProfilePicture from "../components/ProfilePicture";
 import LinkButton from "../components/LinkButton";
 import Button from "../components/form/Button";
@@ -21,10 +21,13 @@ export default function UserInfo() {
         queryFn: () => getUserByUsername(username!, token!),
     });
 
+    const queryClient = useQueryClient();
+
     const mutation = useMutation({
         mutationFn: sendFriendshipRequest,
-        onSuccess(data) {
-            console.log(data);
+        onSuccess() {
+            queryClient.invalidateQueries({queryKey: ["friends"]});
+            queryClient.invalidateQueries({queryKey: ["user-info"]});
         },
         onError(err) {
             toast(err.message, {
