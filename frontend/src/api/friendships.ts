@@ -89,6 +89,36 @@ export async function sendFriendshipRequest({
     return data.data;
 }
 
+export async function declineFriendshipRequest({
+    token,
+    requestId,
+}: {
+    token: string;
+    requestId: number;
+}) {
+    const res = await fetch(
+        "http://localhost:3333/friendship/request/" + requestId + "/decline",
+        {
+            method: "PATCH",
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        },
+    );
+
+    if (!res.ok) {
+        throw new Error("Não foi possível rejeitar o pedido.");
+    }
+
+    const data: {
+        success: boolean;
+        data: Friendship;
+        message: string;
+    } = await res.json();
+
+    return data.data;
+}
+
 export async function acceptFriendshipRequest({
     token,
     requestId,

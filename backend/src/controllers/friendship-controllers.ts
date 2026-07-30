@@ -50,6 +50,23 @@ export async function sendFriendshipRequest(req: Request, res: Response) {
     });
 }
 
+export async function declineFriendshipRequest(req: Request, res: Response) {
+    const friendshipRequestSchema = z.object({
+        requestId: z.int(),
+    });
+    
+    const { requestId } = friendshipRequestSchema.parse({requestId: Number(req.params.requestId)});
+    const receiverId = req.user?.id;
+
+    const friendship = await friendshipService.declineFriendshipRequest(requestId, receiverId!);
+
+    res.status(200).json({
+        success: true,
+        message: "Amizade recusada",
+        data: friendship,
+    });
+}
+
 export async function acceptFriendshipRequest(req: Request, res: Response) {
     const friendshipRequestSchema = z.object({
         requestId: z.int(),

@@ -3,6 +3,7 @@ import Notification from "../components/notification/NotificationItem";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     acceptFriendshipRequest,
+    declineFriendshipRequest,
     listPendingFriendshipRequests,
 } from "../api/friendships";
 import { useAuthStore } from "../stores/authStore";
@@ -19,12 +20,28 @@ export default function NotificationPage() {
 
     const queryClient = useQueryClient();
 
-    const { mutate } = useMutation({
+    const { mutate: acceptMutate } = useMutation({
         mutationFn: (requestId: number) =>
             acceptFriendshipRequest({ token: token!, requestId }),
         onSuccess() {
             queryClient.invalidateQueries({ queryKey: ["notifications"] });
             queryClient.invalidateQueries({ queryKey: ["friends"] });
+        },
+        onError(err) {
+            toast(err.message, {
+                style: {
+                    color: "red",
+                },
+                position: "top-center",
+            });
+        },
+    });
+
+    const { mutate: declineMutate } = useMutation({
+        mutationFn: (requestId: number) =>
+            declineFriendshipRequest({ token: token!, requestId }),
+        onSuccess() {
+            queryClient.invalidateQueries({ queryKey: ["notifications"] });
         },
         onError(err) {
             toast(err.message, {
@@ -84,11 +101,18 @@ export default function NotificationPage() {
                         <Notification.Buttons>
                             <button
                                 className="border p-1 cursor-pointer rounded-lg hover:outline-1"
-                                onClick={() => mutate(friendshipRequest.id)}
+                                onClick={() =>
+                                    acceptMutate(friendshipRequest.id)
+                                }
                             >
                                 <Check />
                             </button>
-                            <button className="border p-1 cursor-pointer rounded-lg hover:outline-1">
+                            <button
+                                className="border p-1 cursor-pointer rounded-lg hover:outline-1"
+                                onClick={() =>
+                                    declineMutate(friendshipRequest.id)
+                                }
+                            >
                                 <X />
                             </button>
                         </Notification.Buttons>

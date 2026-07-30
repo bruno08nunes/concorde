@@ -79,6 +79,24 @@ export class FriendshipService {
         return { ...newRequest, type: "request" } as const;
     }
 
+    async declineFriendshipRequest(friendshipRequestId: number, receiverId: number) {
+        const friendshipRequest = await this.friendshipRepository.getRequestById(friendshipRequestId);
+
+        if (!friendshipRequest) {
+            throw new NotFound("Requisição não encontrada.");
+        }
+
+        if (friendshipRequest?.receiverId !== receiverId) {
+            throw new Unauthorized();
+        }
+
+        if (friendshipRequest.status !== FriendshipRequestStatus.PENDING) {
+            throw new InvalidRequest("Não é possível recusar essa solicitação.");
+        }
+
+        return this.friendshipRepository.changeRequestStatus(friendshipRequestId, FriendshipRequestStatus.REJECTED);
+    }
+
     async getAllFriends(userId: number) {
         return this.friendshipRepository.getFriends(userId);
     }
