@@ -33,6 +33,7 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
     console.log("Um usuário se conectou.");
     socket.on("sendMessage", (msg) => {
+        io.emit("sendMessage", msg);
         console.log(msg);
     })
 });

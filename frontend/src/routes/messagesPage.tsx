@@ -4,9 +4,19 @@ import Message from "../components/messages/Message";
 import TextArea from "../components/form/TextArea";
 import { useParams } from "react-router-dom";
 import { socket } from "../lib/socket";
+import { useSocketEvent } from "../hooks/useSocketEvent";
+import { useState } from "react";
+import type { SendMessage } from "../types/messages";
+import { useAuthStore } from "../stores/authStore";
 
 export default function MessagesPage() {
     const { username } = useParams();
+    const { user } = useAuthStore();
+    const [messages, setMessages] = useState<SendMessage[]>([]);
+
+    useSocketEvent("sendMessage", (message: SendMessage) => {
+        setMessages([...messages, message]);
+    });
 
     function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -18,6 +28,8 @@ export default function MessagesPage() {
 
         socket.emit("sendMessage", {
             message,
+            senderId: user?.id,
+            senderUsername: user?.username,
         });
     }
 
@@ -46,17 +58,9 @@ export default function MessagesPage() {
             </header>
             <hr />
             <div className="flex flex-col p-3 gap-2 flex-1 overflow-auto">
-                <Message
-                    name="Nome"
-                    message="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quibusdam est laborum, ad nisi aliquid nam dolorem aliquam minima quas sed unde vero nobis deserunt velit ut quos beatae suscipit, ipsum quae dolor, ipsam mollitia blanditiis? Tenetur perspiciatis inventore asperiores. Eum ratione iste laboriosam, aperiam minima, sapiente eaque nisi unde distinctio reprehenderit eos fuga ipsa quo cupiditate tenetur maxime perferendis pariatur! Dolorem earum exercitationem suscipit quos quia facilis dolore sit accusamus? Maxime facilis temporibus sint dolorem rerum delectus voluptatum voluptate, architecto iste minima sit totam ab nesciunt enim in vero obcaecati quo, modi consequatur, numquam ipsam voluptatem. Veritatis, accusamus? Error, placeat?"
-                />
-                <Message message="Lorem ipsum dolor sit amet." />
-                <Message name="Nome" message="Lorem ipsum dolor sit amet." />
-                <Message message="Lorem ipsum dolor sit amet." />
-                <Message
-                    message="Lorem ipsum dolor sit amet."
-                    isOwnMessage={true}
-                />
+                {messages.map((message) => (
+                    <Message message={message.message} isOwnMessage={message.senderId === user!.id} />
+                ))}
             </div>
             <hr />
             <form
