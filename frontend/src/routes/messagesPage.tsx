@@ -3,9 +3,23 @@ import IconButton from "../components/IconButton";
 import Message from "../components/messages/Message";
 import TextArea from "../components/form/TextArea";
 import { useParams } from "react-router-dom";
+import { socket } from "../lib/socket";
 
 export default function MessagesPage() {
     const { username } = useParams();
+
+    function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const message = new FormData(e.target).get("message")?.toString();
+
+        if (!message || message.trim() === "") {
+            return;
+        }
+
+        socket.emit("sendMessage", {
+            message,
+        });
+    }
 
     return (
         <>
@@ -45,7 +59,10 @@ export default function MessagesPage() {
                 />
             </div>
             <hr />
-            <div className="flex p-3 border m-2 rounded-full gap-2 focus-within:outline-1">
+            <form
+                className="flex p-3 border m-2 rounded-full gap-2 focus-within:outline-1"
+                onSubmit={handleSubmitMessage}
+            >
                 <IconButton>
                     <Plus />
                 </IconButton>
@@ -53,7 +70,7 @@ export default function MessagesPage() {
                 <IconButton>
                     <Mic />
                 </IconButton>
-            </div>
+            </form>
         </>
     );
 }

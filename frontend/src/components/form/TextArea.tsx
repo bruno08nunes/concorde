@@ -12,13 +12,32 @@ export default function TextArea() {
         textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`;
     }
 
+    function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+
+            const currentTarget = e.currentTarget;
+            if (!currentTarget) {
+                return;
+            }
+
+            const form = currentTarget.form;
+            if (form) {
+                form.requestSubmit();
+            }
+        }
+    }
+
     return (
         <textarea
             ref={textareaRef}
+            id="message"
+            name="message"
             className="flex-1 p-1 focus:outline-0 overflow-y-auto max-h-48 resize-none h-9.5"
             onInput={handleInput}
             placeholder="Digite uma mensagem..."
             rows={1}
+            onKeyDown={handleKeyDown}
         ></textarea>
     );
 }
