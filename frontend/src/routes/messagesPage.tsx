@@ -52,7 +52,9 @@ export default function MessagesPage() {
         }
 
         socket.emit("sendMessage", {
-            message,
+            content: message,
+            type: "private",
+            attachments: [],
             receiverId: friend.id,
         });
     }
@@ -84,7 +86,8 @@ export default function MessagesPage() {
             <div className="flex flex-col p-3 gap-2 flex-1 overflow-auto">
                 {messages.map((message) => (
                     <Message
-                        message={message.message}
+                        key={message._id}
+                        message={message.content ?? ""}
                         isOwnMessage={message.senderId === user!.id}
                     />
                 ))}

@@ -1,5 +1,21 @@
 export interface SendMessage {
-    message: string;
+    _id: string;
+
+    conversationId: string;
+
     senderId: number;
-    senderUsername: string;
+
+    content: string | null;
+
+    type: "private" | "group";
+
+    attachments: {
+        fileId: number; // ID da tabela File do PostgreSQL
+    }[];
+
+    createdAt: Date;
+
+    editedAt?: Date | null;
+
+    deletedAt?: Date | null;
 }

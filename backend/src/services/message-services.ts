@@ -4,8 +4,21 @@ import MongoMessageRepository from "../repositories/mongo/mongo-message-reposito
 export class MessageService {
     constructor(private messagesRepository: IMessageRepository) {}
 
-    createMessage(data: any) {
-        return this.messagesRepository.create(data);
+    createMessage(data: {
+        content: string | null;
+        type: "private" | "group";
+        attachments: { fileId: number }[];
+        receiverId: number;
+        senderId: number;
+        conversationId: string;
+    }) {
+        const message = {
+            ...data,
+            receiverId: undefined,
+            createdAt: new Date(),
+        };
+
+        return this.messagesRepository.create(message);
     }
 }
 
