@@ -32,10 +32,31 @@ io.use((socket, next) => {
 
 io.on("connection", (socket) => {
     console.log("Um usuário se conectou.");
+    // TODO: Fazer verificações se o usuário pode entrar na conversa e pode enviar mensagens
     socket.on("sendMessage", (msg) => {
-        io.emit("sendMessage", msg);
-        console.log(msg);
-    })
+        const firstId = Math.min(socket.data.user.id, msg.receiverId);
+        const secondId = Math.max(socket.data.user.id, msg.receiverId);
+        const conversationId = `${firstId}_${secondId}`;
+
+        io.to(conversationId).emit("sendMessage", {
+            ...msg,
+            senderId: socket.data.user.id,
+        });
+    });
+    socket.on("joinConversation", (conversation) => {
+        const firstId = Math.min(socket.data.user.id, conversation.receiverId);
+        const secondId = Math.max(socket.data.user.id, conversation.receiverId);
+        const conversationId = `${firstId}_${secondId}`;
+
+        socket.join(conversationId);
+    });
+    socket.on("leaveConversation", (conversation) => {
+        const firstId = Math.min(socket.data.user.id, conversation.receiverId);
+        const secondId = Math.max(socket.data.user.id, conversation.receiverId);
+        const conversationId = `${firstId}_${secondId}`;
+
+        socket.leave(conversationId);
+    });
 });
 
 const PORT = env.PORT || 3333;

@@ -5,31 +5,55 @@ import TextArea from "../components/form/TextArea";
 import { useParams } from "react-router-dom";
 import { socket } from "../lib/socket";
 import { useSocketEvent } from "../hooks/useSocketEvent";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SendMessage } from "../types/messages";
 import { useAuthStore } from "../stores/authStore";
+import { getUserByUsername } from "../api/users";
+import { useQuery } from "@tanstack/react-query";
 
 export default function MessagesPage() {
     const { username } = useParams();
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const [messages, setMessages] = useState<SendMessage[]>([]);
 
     useSocketEvent("sendMessage", (message: SendMessage) => {
         setMessages([...messages, message]);
     });
 
+    const { data: friend } = useQuery({
+        queryKey: ["user-info", username],
+        queryFn: () => getUserByUsername(username!, token!),
+    });
+
+    useEffect(() => {
+        // TODO: Fazer com que ao dar f5 ele mostre corretamente
+        if (!friend || !user) {
+            return;
+        }
+
+        socket.emit("joinConversation", {
+            senderId: user.id,
+            receiverId: friend.id,
+        });
+
+        return () => {
+            socket.emit("leaveConversation", {
+                receiverId: friend.id,
+            });
+        };
+    }, [friend, user]);
+
     function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         const message = new FormData(e.target).get("message")?.toString();
 
-        if (!message || message.trim() === "") {
+        if (!message || message.trim() === "" || !friend) {
             return;
         }
 
         socket.emit("sendMessage", {
             message,
-            senderId: user?.id,
-            senderUsername: user?.username,
+            receiverId: friend.id,
         });
     }
 
@@ -59,7 +83,10 @@ export default function MessagesPage() {
             <hr />
             <div className="flex flex-col p-3 gap-2 flex-1 overflow-auto">
                 {messages.map((message) => (
-                    <Message message={message.message} isOwnMessage={message.senderId === user!.id} />
+                    <Message
+                        message={message.message}
+                        isOwnMessage={message.senderId === user!.id}
+                    />
                 ))}
             </div>
             <hr />
