@@ -5,24 +5,30 @@ import TextArea from "../components/form/TextArea";
 import { useParams } from "react-router-dom";
 import { socket } from "../lib/socket";
 import { useSocketEvent } from "../hooks/useSocketEvent";
-import { useEffect, useState } from "react";
-import type { SendMessage } from "../types/messages";
+import { useEffect } from "react";
 import { useAuthStore } from "../stores/authStore";
 import { getUserByUsername } from "../api/users";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getMessages } from "../api/messages";
 
 export default function MessagesPage() {
     const { username } = useParams();
     const { user, token } = useAuthStore();
-    const [messages, setMessages] = useState<SendMessage[]>([]);
 
-    useSocketEvent("sendMessage", (message: SendMessage) => {
-        setMessages([...messages, message]);
+    const queryClient = useQueryClient();
+
+    useSocketEvent("sendMessage", () => {
+        queryClient.invalidateQueries({ queryKey: ["messages"] });
     });
 
     const { data: friend } = useQuery({
         queryKey: ["user-info", username],
         queryFn: () => getUserByUsername(username!, token!),
+    });
+
+    const { data: messages } = useQuery({
+        queryKey: ["messages", friend?.id],
+        queryFn: () => getMessages(friend!.id, token!),
     });
 
     useEffect(() => {
@@ -84,7 +90,7 @@ export default function MessagesPage() {
             </header>
             <hr />
             <div className="flex flex-col p-3 gap-2 flex-1 overflow-auto">
-                {messages.map((message) => (
+                {messages?.map((message) => (
                     <Message
                         key={message._id}
                         message={message.content ?? ""}

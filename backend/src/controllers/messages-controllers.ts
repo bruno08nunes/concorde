@@ -7,7 +7,7 @@ export async function getMessages(req: Request, res: Response) {
         receiverId: z.int(),
     });
 
-    const { receiverId } = getMessagesSchema.parse(req.body);
+    const { receiverId } = getMessagesSchema.parse({receiverId: Number(req.params.receiverId)});
 
     const senderId = req.user?.id
 

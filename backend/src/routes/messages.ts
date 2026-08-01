@@ -4,6 +4,6 @@ import { Router } from "express";
 
 const messagesRoutes = Router();
 
-messagesRoutes.get("/messages", authMiddleware, getMessages);
+messagesRoutes.get("/messages/:receiverId", authMiddleware, getMessages);
 
 export default messagesRoutes;

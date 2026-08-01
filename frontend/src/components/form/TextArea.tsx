@@ -25,6 +25,8 @@ export default function TextArea() {
             if (form) {
                 form.requestSubmit();
             }
+
+            e.currentTarget.value = "";
         }
     }
 
