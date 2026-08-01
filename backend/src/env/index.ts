@@ -7,6 +7,7 @@ const envSchema = z.object({
     JWT_REFRESH_SECRET: z.string(),
     DATABASE_URL: z.url(),
     MONGO_URL: z.url(),
+    MONGO_DB: z.string(),
     PORT: z.coerce.number().default(3333),
 });
 

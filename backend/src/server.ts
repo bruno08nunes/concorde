@@ -3,6 +3,7 @@ import app from "./app";
 import { env } from "./env";
 import { Server } from "socket.io";
 import { configureSocket } from "./socket";
+import { connectMongo } from "./lib/mongo";
 
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
@@ -11,6 +12,17 @@ configureSocket(io);
 
 const PORT = env.PORT || 3333;
 
-server.listen(PORT, () => {
-    console.log("Server is running on http://localhost:" + PORT);
-});
+async function bootstrap() {
+    try {
+        await connectMongo();
+
+        server.listen(PORT, () => {
+            console.log("Server is running on http://localhost:" + PORT);
+        });
+    } catch (err) {
+        console.error("Error:", err);
+        process.exit(1);
+    }
+}
+
+bootstrap();
