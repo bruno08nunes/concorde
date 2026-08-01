@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
 import orderIds from "../../utils/order-ids";
+import messageService from "../../services/message-services";
 
 export function registerMessageEvents(io: Server, socket: Socket) {
     socket.on("sendMessage", (msg) => {
@@ -9,6 +10,8 @@ export function registerMessageEvents(io: Server, socket: Socket) {
         if (!socket.rooms.has(conversationId)) {
             socket.emit("error", {message: "Você não pode enviar mensagem para essa pessoa."});
         }
+
+        messageService.createMessage(msg);
 
         io.to(conversationId).emit("sendMessage", {
             ...msg,
