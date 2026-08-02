@@ -20,4 +20,9 @@
 
 @import "tailwindcss";
 
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-indigo-600) var(--color-slate-800);
+}
+
 /* indigo-600 slate-700 slate-800 slate-900 green-500 */
