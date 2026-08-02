@@ -1,8 +1,12 @@
 import { useEffect, useRef } from "react";
 
-export function useChatScroll<T>(dependency: T) {
+export function useChatScroll<T>(dependency: T, conversationId: number) {
     const chatRef = useRef<HTMLDivElement>(null);
     const hasScrolledInitially = useRef(false);
+
+    useEffect(() => {
+        hasScrolledInitially.current = false;
+    }, [conversationId]);
 
     useEffect(() => {
         if (hasScrolledInitially.current) return;
