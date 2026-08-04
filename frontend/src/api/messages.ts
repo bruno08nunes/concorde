@@ -1,11 +1,19 @@
 import type { SendMessage } from "../types/messages";
 
-export async function getMessages(receiverId: number, token: string) {
-    const res = await fetch("http://localhost:3333/messages/" + receiverId, {
-        headers: {
-            Authorization: "Bearer " + token,
+export async function getMessages(
+    receiverId: number,
+    token: string,
+    before?: string,
+    limit: number = 30,
+) {
+    const res = await fetch(
+        `http://localhost:3333/messages/${receiverId}?limit=${limit}${before ? "&before=" + before : ""}`,
+        {
+            headers: {
+                Authorization: "Bearer " + token,
+            },
         },
-    });
+    );
 
     if (!res.ok) {
         throw new Error("Erro ao buscar mensagens.");

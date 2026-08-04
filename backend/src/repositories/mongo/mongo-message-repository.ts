@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { mongo } from "../../lib/mongo";
 import { IMessageRepository } from "../message-repository";
 import { MessageDocument } from "./types/message-document";
@@ -14,10 +15,28 @@ export default class MongoMessageRepository implements IMessageRepository {
         };
     }
 
-    async getConversationMessages(conversationId: string) {
-        return await this.collection
-            .find({ conversationId })
-            .sort({ createdAt: 1 })
+    async getConversationMessages(
+        conversationId: string,
+        limit: number,
+        before?: string,
+    ) {
+        const filter: {
+            conversationId: string;
+            _id?: { $lt: ObjectId };
+        } = { conversationId };
+
+        if (before) {
+            filter._id = {
+                $lt: new ObjectId(before),
+            };
+        }
+
+        const messages = await this.collection
+            .find(filter)
+            .sort({ createdAt: -1 })
+            .limit(limit)
             .toArray();
+        
+        return messages.reverse();
     }
 }

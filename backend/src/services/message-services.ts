@@ -22,13 +22,16 @@ export class MessageService {
         return this.messagesRepository.create(message);
     }
 
-    listMessages(receiverId: number, senderId: number) {
-        // TODO: Verificar se pode ler a conversa
-
+    listMessages(
+        receiverId: number,
+        senderId: number,
+        limit: number,
+        before?: string,
+    ) {
         const [firstId, secondId] = orderIds(receiverId, senderId);
-        const conversationId = `${firstId}_${secondId}`
+        const conversationId = `${firstId}_${secondId}`;
 
-        return this.messagesRepository.getConversationMessages(conversationId);
+        return this.messagesRepository.getConversationMessages(conversationId, limit, before);
     }
 }
 
