@@ -14,7 +14,14 @@ export default function Messages({
     receiverId: number;
     userId: number;
 }) {
-    const { data, isLoading, error, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
+    const {
+        data,
+        isLoading,
+        error,
+        hasNextPage,
+        isFetchingNextPage,
+        fetchNextPage,
+    } = useInfiniteQuery({
         queryKey: ["messages", receiverId],
         queryFn: ({ pageParam }) => getMessages(receiverId, token, pageParam),
         initialPageParam: undefined as string | undefined,
@@ -25,8 +32,8 @@ export default function Messages({
         },
         select: (data) => ({
             pages: [...data.pages].reverse(),
-            pageParams: [...data.pageParams].reverse()
-        })
+            pageParams: [...data.pageParams].reverse(),
+        }),
     });
 
     const chatRef = useChatScroll(data, receiverId);
@@ -39,10 +46,29 @@ export default function Messages({
         );
     }
 
+    async function handleScroll() {
+        const element = chatRef.current;
+
+        if (!element) return;
+
+        if (element.scrollTop <= 50 && hasNextPage && !isFetchingNextPage) {
+            const oldHeight = element.scrollHeight;
+
+            await fetchNextPage();
+
+            requestAnimationFrame(() => {
+                const newHeight = element.scrollHeight;
+
+                element.scrollTop = newHeight - oldHeight;
+            });
+        }
+    }
+
     return (
         <div
             className="flex flex-col p-3 gap-2 flex-1 overflow-auto custom-scrollbar"
             ref={chatRef}
+            onScroll={handleScroll}
         >
             {(isLoading || isFetchingNextPage) && (
                 <div className="justify-center flex items-center h-full">
@@ -53,6 +79,9 @@ export default function Messages({
                 <div className="text-center text-xl">
                     Nenhuma mensagem. Inicie a conversa.
                 </div>
+            )}
+            {!hasNextPage && (
+                <div className="text-center text-lg">Início da Conversa</div>
             )}
             {data?.pages.map((page, i) => (
                 <Fragment key={i}>

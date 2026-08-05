@@ -7,20 +7,34 @@ import Messages from "../components/messages/Messages";
 import MessagePageHeader from "../components/messages/MessagePageHeader";
 import MessageForm from "../components/messages/MessageForm";
 import { useConversationRoom } from "../hooks/useConversationRoom";
+import type { SendMessage } from "../types/messages";
 
 export default function MessagesPage() {
     const { username } = useParams();
     const { user, token } = useAuthStore();
 
-    const queryClient = useQueryClient();
-    useSocketEvent("sendMessage", () => {
-        // TODO: Melhorar método para mostrar mensagens no evento
-        queryClient.invalidateQueries({ queryKey: ["messages"] });
-    });
-
     const { data: friend } = useQuery({
         queryKey: ["user-info", username],
         queryFn: () => getUserByUsername(username!, token!),
+    });
+
+    const queryClient = useQueryClient();
+    useSocketEvent("sendMessage", (message) => {
+        queryClient.setQueryData(["messages", friend!.id], (oldData: { pages: SendMessage[][]}) => {
+            if (!oldData) return oldData;
+            
+            return {
+                ...oldData,
+                pages: oldData.pages.map((page, index) => {
+                    if (index !== 0) return page;
+
+                    const messages = [...page, message];
+
+                    return messages;
+                }),
+            };
+        });
+
     });
 
     useConversationRoom(friend?.id);
