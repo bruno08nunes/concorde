@@ -4,6 +4,7 @@ import Message from "./Message";
 import { useChatScroll } from "../../hooks/useChatScroll";
 import { Loader2 } from "lucide-react";
 import { Fragment } from "react/jsx-runtime";
+import { formatDay } from "../../utils/date";
 
 export default function Messages({
     token,
@@ -64,9 +65,11 @@ export default function Messages({
         }
     }
 
+    const messages = data?.pages.flat();
+
     return (
         <div
-            className="flex flex-col p-3 gap-2 flex-1 overflow-auto custom-scrollbar"
+            className="flex flex-col p-3 gap-2 flex-1 overflow-auto custom-scrollbar relative"
             ref={chatRef}
             onScroll={handleScroll}
         >
@@ -83,17 +86,32 @@ export default function Messages({
             {!hasNextPage && (
                 <div className="text-center text-lg">Início da Conversa</div>
             )}
-            {data?.pages.map((page, i) => (
-                <Fragment key={i}>
-                    {page.map((message) => (
+            {messages?.map((message, index) => {
+                const previous = messages[index - 1];
+
+                const showDate =
+                    !previous ||
+                    new Date(previous.createdAt).toDateString() !==
+                        new Date(message.createdAt).toDateString();
+
+                return (
+                    <Fragment key={message._id}>
+                        {showDate && (
+                            <div className="sticky flex justify-center my-3 top-0">
+                                <span className="bg-zinc-700 px-3 py-1 rounded-full text-xs w-50 text-center">
+                                    {formatDay(message.createdAt)}
+                                </span>
+                            </div>
+                        )}
+
                         <Message
-                            key={message._id}
                             message={message.content ?? ""}
                             isOwnMessage={message.senderId === userId}
+                            date={message.createdAt}
                         />
-                    ))}
-                </Fragment>
-            ))}
+                    </Fragment>
+                );
+            })}
         </div>
     );
 }

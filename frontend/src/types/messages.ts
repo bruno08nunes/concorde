@@ -13,9 +13,9 @@ export interface SendMessage {
         fileId: number; // ID da tabela File do PostgreSQL
     }[];
 
-    createdAt: Date;
+    createdAt: string;
 
-    editedAt?: Date | null;
+    editedAt?: string | null;
 
-    deletedAt?: Date | null;
+    deletedAt?: string | null;
 }
