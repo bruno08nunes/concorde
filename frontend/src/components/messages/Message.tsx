@@ -4,7 +4,7 @@ interface MessageProps {
     name?: string;
     message: string;
     isOwnMessage?: boolean;
-    date: string;
+    date?: string;
 }
 
 export default function Message({
@@ -24,9 +24,11 @@ export default function Message({
                 </>
             )}
             {message}
-            <div className="text-xs text-slate-300 text-right">
-                {formatHour(date)}
-            </div>
+            {date && (
+                <div className="text-xs text-slate-300 text-right">
+                    {formatHour(date)}
+                </div>
+            )}
         </div>
     );
 }

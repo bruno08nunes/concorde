@@ -46,4 +46,26 @@ export function registerMessageEvents(io: Server, socket: Socket) {
 
         io.to(conversationId).emit("sendMessage", result);
     });
+
+    socket.on("userTyping", ({ conversationId }) => {
+        const [firstId, secondId] = orderIds(
+            socket.data.user.id,
+            conversationId,
+        );
+        const newConversationId = `${firstId}_${secondId}`;
+        socket.to(newConversationId).emit("userTyping", {
+            userId: socket.data.user.id,
+        });
+    });
+
+    socket.on("userStopTyping", ({ conversationId }) => {
+        const [firstId, secondId] = orderIds(
+            socket.data.user.id,
+            conversationId,
+        );
+        const newConversationId = `${firstId}_${secondId}`;
+        socket.to(newConversationId).emit("userStopTyping", {
+            userId: socket.data.user.id,
+        });
+    });
 }

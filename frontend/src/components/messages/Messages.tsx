@@ -5,6 +5,8 @@ import { useChatScroll } from "../../hooks/useChatScroll";
 import { Loader2 } from "lucide-react";
 import { Fragment } from "react/jsx-runtime";
 import { formatDay } from "../../utils/date";
+import { useState } from "react";
+import { useSocketEvent } from "../../hooks/useSocketEvent";
 
 export default function Messages({
     token,
@@ -38,6 +40,14 @@ export default function Messages({
     });
 
     const chatRef = useChatScroll(data, receiverId);
+
+    const [isFriendTyping, setIsFriendTyping] = useState(false);
+    useSocketEvent("userTyping", () => {
+        setIsFriendTyping(true);
+    });
+    useSocketEvent("userStopTyping", () => {
+        setIsFriendTyping(false);
+    });
 
     if (error) {
         return (
@@ -112,6 +122,11 @@ export default function Messages({
                     </Fragment>
                 );
             })}
+            {isFriendTyping && (
+                <div className="animate-pulse">
+                    <Message message=". . ." />
+                </div>
+            )}
         </div>
     );
 }

@@ -1,33 +1,19 @@
-import { useRef } from "react";
+import { useRef, type TextareaHTMLAttributes } from "react";
 
-export default function TextArea() {
+export default function TextArea({
+    onKeyDown,
+    onInput
+}: TextareaHTMLAttributes<HTMLTextAreaElement>) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    function handleInput() {
+    function handleInput(e: React.InputEvent<HTMLTextAreaElement>) {
         const textarea = textareaRef.current;
 
         if (!textarea) return;
 
         textarea.style.height = "auto";
         textarea.style.height = `${Math.min(textarea.scrollHeight, 100)}px`;
-    }
-
-    function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-
-            const currentTarget = e.currentTarget;
-            if (!currentTarget) {
-                return;
-            }
-
-            const form = currentTarget.form;
-            if (form) {
-                form.requestSubmit();
-            }
-
-            e.currentTarget.value = "";
-        }
+        onInput?.(e);
     }
 
     return (
@@ -39,7 +25,7 @@ export default function TextArea() {
             onInput={handleInput}
             placeholder="Digite uma mensagem..."
             rows={1}
-            onKeyDown={handleKeyDown}
+            onKeyDown={onKeyDown}
         ></textarea>
     );
 }
