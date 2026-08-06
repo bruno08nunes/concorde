@@ -1,12 +1,11 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getMessages } from "../../api/messages";
-import Message from "./Message";
 import { useChatScroll } from "../../hooks/useChatScroll";
-import { Loader2 } from "lucide-react";
-import { Fragment } from "react/jsx-runtime";
-import { formatDay } from "../../utils/date";
 import { useState } from "react";
 import { useSocketEvent } from "../../hooks/useSocketEvent";
+import Loader from "../Loader";
+import MessagesList from "./MessagesList";
+import TypingMessage from "./TypingMessage";
 
 export default function Messages({
     token,
@@ -38,7 +37,10 @@ export default function Messages({
             pageParams: [...data.pageParams].reverse(),
         }),
     });
-    
+
+    const messages = data?.pages.flat();
+    const hasMessages = data?.pages.length === 0;
+
     const [isFriendTyping, setIsFriendTyping] = useState(false);
 
     const chatRef = useChatScroll(data, receiverId, isFriendTyping);
@@ -49,14 +51,6 @@ export default function Messages({
     useSocketEvent("userStopTyping", () => {
         setIsFriendTyping(false);
     });
-
-    if (error) {
-        return (
-            <div className="flex-1 text-center p-5 text-lg">
-                🛑 Erro ao buscar mensagens
-            </div>
-        );
-    }
 
     async function handleScroll() {
         const element = chatRef.current;
@@ -76,7 +70,13 @@ export default function Messages({
         }
     }
 
-    const messages = data?.pages.flat();
+    if (error) {
+        return (
+            <div className="flex-1 text-center p-5 text-lg">
+                🛑 Erro ao buscar mensagens
+            </div>
+        );
+    }
 
     return (
         <div
@@ -84,49 +84,18 @@ export default function Messages({
             ref={chatRef}
             onScroll={handleScroll}
         >
-            {(isLoading || isFetchingNextPage) && (
-                <div className="justify-center flex items-center h-full">
-                    <Loader2 className="animate-spin" size={40} />
-                </div>
+            {!hasNextPage && (
+                <div className="text-center text-lg">Início da Conversa</div>
             )}
-            {data?.pages.length === 0 && (
+            <Loader condition={isLoading || isFetchingNextPage} />
+            {hasMessages && (
                 <div className="text-center text-xl">
                     Nenhuma mensagem. Inicie a conversa.
                 </div>
             )}
-            {!hasNextPage && (
-                <div className="text-center text-lg">Início da Conversa</div>
-            )}
-            {messages?.map((message, index) => {
-                const previous = messages[index - 1];
-
-                const showDate =
-                    !previous ||
-                    new Date(previous.createdAt).toDateString() !==
-                        new Date(message.createdAt).toDateString();
-
-                return (
-                    <Fragment key={message._id}>
-                        {showDate && (
-                            <div className="sticky flex justify-center my-3 top-0">
-                                <span className="bg-zinc-700 px-3 py-1 rounded-full text-xs w-50 text-center">
-                                    {formatDay(message.createdAt)}
-                                </span>
-                            </div>
-                        )}
-
-                        <Message
-                            message={message.content ?? ""}
-                            isOwnMessage={message.senderId === userId}
-                            date={message.createdAt}
-                        />
-                    </Fragment>
-                );
-            })}
+            <MessagesList messages={messages} userId={userId} />
             {isFriendTyping && (
-                <div className="animate-pulse">
-                    <Message message=". . ." />
-                </div>
+                <TypingMessage />
             )}
         </div>
     );
