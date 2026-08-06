@@ -38,10 +38,11 @@ export default function Messages({
             pageParams: [...data.pageParams].reverse(),
         }),
     });
-
-    const chatRef = useChatScroll(data, receiverId);
-
+    
     const [isFriendTyping, setIsFriendTyping] = useState(false);
+
+    const chatRef = useChatScroll(data, receiverId, isFriendTyping);
+
     useSocketEvent("userTyping", () => {
         setIsFriendTyping(true);
     });
