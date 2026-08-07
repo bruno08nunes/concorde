@@ -6,6 +6,8 @@ import { useSocketEvent } from "../../hooks/useSocketEvent";
 import Loader from "../Loader";
 import MessagesList from "./MessagesList";
 import TypingMessage from "./TypingMessage";
+import { useScrollToBottom } from "../../hooks/useScrollToBottom";
+import { ArrowDownCircle } from "lucide-react";
 
 export default function Messages({
     token,
@@ -44,6 +46,7 @@ export default function Messages({
     const [isFriendTyping, setIsFriendTyping] = useState(false);
 
     const chatRef = useChatScroll(data, receiverId, isFriendTyping);
+    const { scrollToBottom, showButton } = useScrollToBottom(chatRef);
 
     useSocketEvent("userTyping", () => {
         setIsFriendTyping(true);
@@ -84,6 +87,14 @@ export default function Messages({
             ref={chatRef}
             onScroll={handleScroll}
         >
+            {showButton && (
+                <button
+                    onClick={scrollToBottom}
+                    className="bg-indigo-600 p-1 rounded-full cursor-pointer z-10 sticky top-0 right-auto size-9"
+                >
+                    <ArrowDownCircle size={28} />
+                </button>
+            )}
             {!hasNextPage && (
                 <div className="text-center text-lg">Início da Conversa</div>
             )}
@@ -94,9 +105,7 @@ export default function Messages({
                 </div>
             )}
             <MessagesList messages={messages} userId={userId} />
-            {isFriendTyping && (
-                <TypingMessage />
-            )}
+            {isFriendTyping && <TypingMessage />}
         </div>
     );
 }
