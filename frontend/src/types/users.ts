@@ -17,4 +17,5 @@ export interface User {
     updatedAt: Date;
     isFriend: boolean;
     isYou: boolean;
+    isOnline: boolean;
 }

@@ -11,5 +11,6 @@ export interface Friendship {
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        isOnline?: boolean;
     };
 }
