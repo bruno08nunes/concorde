@@ -5,7 +5,6 @@ import PrismaFriendshipRepository from "../../repositories/prisma/prisma-friends
 const friendshipRepository = new PrismaFriendshipRepository();
 
 export function registerConversationEvents(io: Server, socket: Socket) {
-    // TODO: Fazer verificações se o usuário pode entrar na conversa e pode enviar mensagens
     socket.on("joinConversation", async (conversation) => {
         const [firstId, secondId] = orderIds(
             socket.data.user.id,
@@ -22,6 +21,7 @@ export function registerConversationEvents(io: Server, socket: Socket) {
         const conversationId = `${firstId}_${secondId}`;
 
         socket.join(conversationId);
+        socket.data.currentConversation = conversationId;
     });
 
     socket.on("leaveConversation", (conversation) => {
@@ -31,6 +31,11 @@ export function registerConversationEvents(io: Server, socket: Socket) {
         );
         const conversationId = `${firstId}_${secondId}`;
 
+        socket.to(conversationId).emit("userStopTyping", {
+            userId: socket.data.user.id,
+        });
+
         socket.leave(conversationId);
+        socket.data.currentConversation = null;
     });
 }
