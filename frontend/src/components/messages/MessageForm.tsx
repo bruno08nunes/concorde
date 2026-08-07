@@ -38,6 +38,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
 
             e.currentTarget.value = "";
             userStopTyping(friendId);
+            isTyping.current = false;
             return;
         }
     }
