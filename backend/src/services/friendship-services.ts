@@ -1,5 +1,6 @@
 import { FriendshipRequestStatus } from "../../generated/prisma/enums";
 import { IFriendshipRepository } from "../repositories/friendship-repository";
+import { usersOnline } from "../socket";
 import { Unauthorized } from "../utils/errors/auth-errors";
 import { InvalidRequest, NotFound } from "../utils/errors/error";
 import {
@@ -79,8 +80,12 @@ export class FriendshipService {
         return { ...newRequest, type: "request" } as const;
     }
 
-    async declineFriendshipRequest(friendshipRequestId: number, receiverId: number) {
-        const friendshipRequest = await this.friendshipRepository.getRequestById(friendshipRequestId);
+    async declineFriendshipRequest(
+        friendshipRequestId: number,
+        receiverId: number,
+    ) {
+        const friendshipRequest =
+            await this.friendshipRepository.getRequestById(friendshipRequestId);
 
         if (!friendshipRequest) {
             throw new NotFound("Requisição não encontrada.");
@@ -91,14 +96,27 @@ export class FriendshipService {
         }
 
         if (friendshipRequest.status !== FriendshipRequestStatus.PENDING) {
-            throw new InvalidRequest("Não é possível recusar essa solicitação.");
+            throw new InvalidRequest(
+                "Não é possível recusar essa solicitação.",
+            );
         }
 
-        return this.friendshipRepository.changeRequestStatus(friendshipRequestId, FriendshipRequestStatus.REJECTED);
+        return this.friendshipRepository.changeRequestStatus(
+            friendshipRequestId,
+            FriendshipRequestStatus.REJECTED,
+        );
     }
 
     async getAllFriends(userId: number) {
-        return this.friendshipRepository.getFriends(userId);
+        const friendships = await this.friendshipRepository.getFriends(userId);
+
+        return friendships.map((friendship) => ({
+            ...friendship,
+            friend: {
+                ...friendship.friend,
+                isOnline: usersOnline.has(friendship.friend.id!),
+            },
+        }));
     }
 
     async createFriendship(friendshipRequestId: number, receiverId?: number) {

@@ -6,6 +6,7 @@ import {
     NotFound,
     UserAlreadyExistsError,
 } from "../utils/errors/error";
+import { usersOnline } from "../socket";
 
 export class UserService {
     constructor(private userRepository: IUserRepository) {}
@@ -21,7 +22,12 @@ export class UserService {
     }
 
     async getUserByUsername(username: string, userId: number) {
-        return this.userRepository.findByUsername(username, userId);
+        const user = await this.userRepository.findByUsername(username, userId);
+
+        return {
+            ...user,
+            isOnline: usersOnline.has(user?.id!),
+        };
     }
 
     async searchUsersByUsername(username: string) {
