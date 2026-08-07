@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { socket } from "../lib/socket";
+import { joinConversation, leaveConversation } from "../lib/socket";
 
 export function useConversationRoom(receiverId?: number) {
     useEffect(() => {
@@ -7,14 +7,10 @@ export function useConversationRoom(receiverId?: number) {
             return;
         }
 
-        socket.emit("joinConversation", {
-            receiverId,
-        });
+        joinConversation(receiverId);
 
         return () => {
-            socket.emit("leaveConversation", {
-                receiverId,
-            });
+            leaveConversation(receiverId);
         };
     }, [receiverId]);
 }

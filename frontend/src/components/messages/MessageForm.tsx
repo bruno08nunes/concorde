@@ -1,7 +1,7 @@
 import { Mic, Plus } from "lucide-react";
 import IconButton from "../IconButton";
 import TextArea from "../form/TextArea";
-import { socket } from "../../lib/socket";
+import { sendMessageToSocket, userStartTyping, userStopTyping } from "../../lib/socket";
 import { useRef } from "react";
 
 export default function MessageForm({ friendId }: { friendId?: number }) {
@@ -13,7 +13,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
             return;
         }
 
-        socket.emit("sendMessage", {
+        sendMessageToSocket({
             content: message,
             type: "private",
             attachments: [],
@@ -27,7 +27,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
 
-            if (!currentTarget || currentTarget.value.trim() === "") {
+            if (!currentTarget || currentTarget.value.trim() === "" || !friendId) {
                 return;
             }
 
@@ -37,7 +37,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
             }
 
             e.currentTarget.value = "";
-            socket.emit("userStopTyping", { conversationId: friendId });
+            userStopTyping(friendId);
             return;
         }
     }
@@ -48,12 +48,12 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
 
         if (value && !isTyping.current) {
             isTyping.current = true;
-            socket.emit("userTyping", { conversationId: friendId });
+            userStartTyping(friendId!);
         }
 
         if (!value && isTyping.current) {
             isTyping.current = false;
-            socket.emit("userStopTyping", { conversationId: friendId });
+            userStopTyping(friendId!);
         }
     }
 
