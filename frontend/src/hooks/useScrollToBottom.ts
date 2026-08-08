@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 
-export function useScrollToBottom(ref: React.RefObject<HTMLDivElement | null>) {
+export function useScrollToBottom(
+    ref: React.RefObject<HTMLDivElement | null>,
+    setHasNewMessages: React.Dispatch<React.SetStateAction<boolean>>,
+) {
     const [showButton, setShowButton] = useState(false);
 
     useEffect(() => {
@@ -14,6 +17,9 @@ export function useScrollToBottom(ref: React.RefObject<HTMLDivElement | null>) {
                 element!.clientHeight;
 
             setShowButton(distanceFromBottom > 100);
+            if (distanceFromBottom < 100) {
+                setHasNewMessages(false);
+            }
         }
 
         handleScroll();
@@ -23,7 +29,7 @@ export function useScrollToBottom(ref: React.RefObject<HTMLDivElement | null>) {
         return () => {
             element.removeEventListener("scroll", handleScroll);
         };
-    }, [ref]);
+    }, [ref, setHasNewMessages]);
 
     function scrollToBottom() {
         ref.current?.scrollTo({

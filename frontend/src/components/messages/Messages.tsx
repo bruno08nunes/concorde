@@ -45,8 +45,15 @@ export default function Messages({
 
     const [isFriendTyping, setIsFriendTyping] = useState(false);
 
-    const chatRef = useChatScroll(data, receiverId, isFriendTyping);
-    const { scrollToBottom, showButton } = useScrollToBottom(chatRef);
+    const { chatRef, hasNewMessages, setHasNewMessages } = useChatScroll(
+        data,
+        receiverId,
+        isFriendTyping,
+    );
+    const { scrollToBottom, showButton } = useScrollToBottom(
+        chatRef,
+        setHasNewMessages,
+    );
 
     useSocketEvent("userTyping", () => {
         setIsFriendTyping(true);
@@ -89,10 +96,19 @@ export default function Messages({
         >
             {showButton && (
                 <button
-                    onClick={scrollToBottom}
-                    className="bg-indigo-600 p-1 rounded-full cursor-pointer z-10 sticky top-0 right-auto size-9"
+                    onClick={() => {
+                        scrollToBottom();
+                        setHasNewMessages(false);
+                    }}
+                    className="bg-white p-1 rounded-full cursor-pointer z-10 sticky top-0 size-9 flex justify-center items-center"
                 >
-                    <ArrowDownCircle size={28} />
+                    <ArrowDownCircle
+                        size={32}
+                        color={hasNewMessages ? "#4f39f6" : "black"}
+                    />
+                    {hasNewMessages && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-indigo-600" />
+                    )}
                 </button>
             )}
             {!hasNextPage && (

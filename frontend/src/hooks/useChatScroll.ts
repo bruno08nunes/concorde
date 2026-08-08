@@ -1,12 +1,20 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { SendMessage } from "../types/messages";
 
-export function useChatScroll<T>(
-    dependency: T,
+export function useChatScroll(
+    dependency:
+        | {
+              pages: SendMessage[][];
+              pageParams: (string | undefined)[];
+          }
+        | undefined,
     conversationId: number,
     isFriendTyping: boolean,
 ) {
     const chatRef = useRef<HTMLDivElement>(null);
     const hasScrolledInitially = useRef(false);
+    const [hasNewMessages, setHasNewMessages] = useState(false);
+    const currentPagesAmount = useRef(0);
 
     useEffect(() => {
         hasScrolledInitially.current = false;
@@ -33,7 +41,16 @@ export function useChatScroll<T>(
                 top: chat.scrollHeight,
                 behavior: "smooth",
             });
+            setHasNewMessages(false);
+            return;
         }
+
+        if ((dependency?.pages.length ?? 0) > currentPagesAmount.current) {
+            currentPagesAmount.current = dependency?.pages.length ?? 0;
+            return;
+        }
+
+        setHasNewMessages(true);
     }, [dependency]);
 
     useEffect(() => {
@@ -54,5 +71,5 @@ export function useChatScroll<T>(
         }
     }, [isFriendTyping]);
 
-    return chatRef;
+    return { chatRef, hasNewMessages, setHasNewMessages };
 }
