@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { SendMessage } from "../types/messages";
+import { useAuthStore } from "../stores/authStore";
 
 export function useChatScroll(
     dependency:
@@ -15,6 +16,7 @@ export function useChatScroll(
     const hasScrolledInitially = useRef(false);
     const [hasNewMessages, setHasNewMessages] = useState(false);
     const currentPagesAmount = useRef(0);
+    const { user } = useAuthStore();
 
     useEffect(() => {
         hasScrolledInitially.current = false;
@@ -45,13 +47,22 @@ export function useChatScroll(
             return;
         }
 
-        if ((dependency?.pages.length ?? 0) > currentPagesAmount.current) {
+        const lastPage = dependency?.pages[dependency.pages.length - 1];
+        const isLastMessageYours =
+            lastPage?.[lastPage?.length - 1].senderId === user?.id;
+        if (isLastMessageYours) {
+            return;
+        }
+
+        const hasNewPage =
+            (dependency?.pages.length ?? 0) > currentPagesAmount.current;
+        if (hasNewPage) {
             currentPagesAmount.current = dependency?.pages.length ?? 0;
             return;
         }
 
         setHasNewMessages(true);
-    }, [dependency]);
+    }, [dependency, user?.id]);
 
     useEffect(() => {
         const element = chatRef.current;
