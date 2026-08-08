@@ -12,12 +12,15 @@ export function configureSocket(io: Server) {
         console.log("Um usuário se conectou.");
 
         const userId = socket.data.user.id;
+
         let sockets = usersOnline.get(userId);
         if (!sockets) {
             sockets = new Set();
             usersOnline.set(userId, sockets);
         }
         sockets.add(socket.id);
+
+        socket.join(`user:${userId}`);
 
         registerEvents(io, socket);
     });

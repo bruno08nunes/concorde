@@ -45,6 +45,9 @@ export function registerMessageEvents(io: Server, socket: Socket) {
         });
 
         io.to(conversationId).emit("sendMessage", result);
+        io.to(`user:${message.receiverId}`).emit("newMessage", {
+            ...result,
+        });
     });
 
     socket.on("userTyping", ({ conversationId }) => {

@@ -7,25 +7,32 @@ interface UserListItemProps {
     name: string;
     baseURL: string;
     isOnline?: boolean;
+    hasNewMessages: boolean;
 }
 
 export default function UserListItem({
     imgURL,
     name,
     baseURL,
-    isOnline
+    isOnline,
+    hasNewMessages,
 }: UserListItemProps) {
     return (
         <li>
             <Link
                 to={baseURL + name}
-                className="flex items-center gap-4 hover:bg-slate-700 p-1 rounded-2xl cursor-pointer"
+                className="flex justify-between items-center hover:bg-slate-700 p-1 rounded-2xl cursor-pointer"
             >
-                <div className="relative">
-                    <ProfilePicture imgURL={imgURL} />
-                    <UserOnlineIcon isOnline={isOnline} />
+                <div className="flex items-center gap-4">
+                    <div className="relative">
+                        <ProfilePicture imgURL={imgURL} />
+                        <UserOnlineIcon isOnline={isOnline} />
+                    </div>
+                    <span className="text-xl">{name}</span>
                 </div>
-                <span className="text-xl">{name}</span>
+                {hasNewMessages && (
+                    <span className="w-3 h-3 rounded-full bg-indigo-600" />
+                )}
             </Link>
         </li>
     );
