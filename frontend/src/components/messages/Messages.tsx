@@ -7,7 +7,7 @@ import Loader from "../Loader";
 import MessagesList from "./MessagesList";
 import TypingMessage from "./TypingMessage";
 import { useScrollToBottom } from "../../hooks/useScrollToBottom";
-import { ArrowDownCircle } from "lucide-react";
+import ScrollDownMessagesButton from "./ScrollDownMessagesButton";
 
 export default function Messages({
     token,
@@ -95,21 +95,13 @@ export default function Messages({
             onScroll={handleScroll}
         >
             {showButton && (
-                <button
+                <ScrollDownMessagesButton
                     onClick={() => {
                         scrollToBottom();
                         setHasNewMessages(false);
                     }}
-                    className="bg-white p-1 rounded-full cursor-pointer z-10 sticky top-0 size-9 flex justify-center items-center"
-                >
-                    <ArrowDownCircle
-                        size={32}
-                        color={hasNewMessages ? "#4f39f6" : "black"}
-                    />
-                    {hasNewMessages && (
-                        <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-indigo-600" />
-                    )}
-                </button>
+                    hasNewMessages={hasNewMessages}
+                />
             )}
             {!hasNextPage && (
                 <div className="text-center text-lg">Início da Conversa</div>
