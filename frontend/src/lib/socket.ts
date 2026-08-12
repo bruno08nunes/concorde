@@ -5,15 +5,15 @@ export const socket = io("http://localhost:3333", {
 });
 
 export function sendMessageToSocket(data: {
-    content: string;
+    content?: string;
     type: "private" | "group";
-    attachments: [];
+    attachments?: { fileId: number }[];
     receiverId: number;
 }) {
     socket.emit("sendMessage", {
         content: data.content,
         type: "private",
-        attachments: [],
+        attachments: data.attachments,
         receiverId: data.receiverId,
     });
 }

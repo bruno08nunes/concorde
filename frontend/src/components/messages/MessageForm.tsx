@@ -1,22 +1,38 @@
 import { Mic, Plus } from "lucide-react";
 import IconButton from "../IconButton";
 import TextArea from "../form/TextArea";
-import { sendMessageToSocket, userStartTyping, userStopTyping } from "../../lib/socket";
+import {
+    sendMessageToSocket,
+    userStartTyping,
+    userStopTyping,
+} from "../../lib/socket";
 import { useRef } from "react";
+import IconLabel from "../IconLabel";
+import { uploadFiles } from "../../api/files";
 
 export default function MessageForm({ friendId }: { friendId?: number }) {
-    function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
+    async function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
-        const message = new FormData(e.target).get("message")?.toString();
+        const formData = new FormData(e.target);
+        const message = formData.get("message")?.toString();
+        const files = formData.getAll("files");
 
-        if (!message || message.trim() === "" || !friendId) {
+        const isEmpty =
+            (!message || message?.trim() === "") && files.length === 0;
+
+        if (isEmpty || !friendId) {
             return;
+        }
+
+        let filesIds: { fileId: number }[] = [];
+        if (files.length > 0) {
+            filesIds = await uploadFiles(formData);
         }
 
         sendMessageToSocket({
             content: message,
             type: "private",
-            attachments: [],
+            attachments: filesIds,
             receiverId: friendId,
         });
     }
@@ -27,7 +43,11 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
 
-            if (!currentTarget || currentTarget.value.trim() === "" || !friendId) {
+            if (
+                !currentTarget ||
+                currentTarget.value.trim() === "" ||
+                !friendId
+            ) {
                 return;
             }
 
@@ -63,9 +83,16 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
             className="flex p-3 border m-2 rounded-full gap-2 focus-within:outline-1"
             onSubmit={handleSubmitMessage}
         >
-            <IconButton>
+            <IconLabel inputId="files">
+                <input
+                    type="file"
+                    name="files"
+                    id="files"
+                    multiple
+                    className="hidden"
+                />
                 <Plus />
-            </IconButton>
+            </IconLabel>
             <TextArea onKeyDown={handleKeyDown} onInput={handleInput} />
             <IconButton>
                 <Mic />
