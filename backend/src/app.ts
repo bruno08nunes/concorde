@@ -5,6 +5,7 @@ import userRoutes from "./routes/user-routes";
 import { errorHandler } from "./middlewares/erro-handler";
 import friendshipRoutes from "./routes/friendship-routes";
 import messagesRoutes from "./routes/messages";
+import fileRoutes from "./routes/file-routes";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 app.use("/", userRoutes);
 app.use("/", friendshipRoutes);
 app.use("/", messagesRoutes);
+app.use("/", fileRoutes);
 
 app.use(errorHandler);
 
