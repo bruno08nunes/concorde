@@ -6,7 +6,7 @@ import { mimeTypeToFileType } from "../utils/file";
 
 const fileService = new FileService(new PrismaFileRepository());
 
-export function uploadFile(req: Request, res: Response) {
+export async function uploadFileController(req: Request, res: Response) {
     const uploadFileBodySchema = z.object({
         files: z.array(
             z.object({
@@ -23,7 +23,7 @@ export function uploadFile(req: Request, res: Response) {
         type: mimeTypeToFileType(file.mimetype),
     }));
 
-    const newFiles = fileService.uploadFiles(files);
+    const newFiles = await fileService.uploadFiles(files);
 
     return res.status(201).json({
         message: "Arquivos criados",
