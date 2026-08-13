@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import path from "node:path";
 
 import userRoutes from "./routes/user-routes";
 import { errorHandler } from "./middlewares/erro-handler";
@@ -20,6 +21,11 @@ app.use("/", userRoutes);
 app.use("/", friendshipRoutes);
 app.use("/", messagesRoutes);
 app.use("/", fileRoutes);
+
+app.use(
+    "/uploads",
+    express.static(path.join(process.cwd(), "public", "files")),
+);
 
 app.use(errorHandler);
 
