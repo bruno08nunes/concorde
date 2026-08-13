@@ -27,6 +27,7 @@ export default function MessagesList({ messages, userId }: MessagesListProps) {
                     message={message.content ?? ""}
                     isOwnMessage={message.senderId === userId}
                     date={message.createdAt}
+                    files={message.attachments}
                 />
             </Fragment>
         );

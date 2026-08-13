@@ -45,7 +45,6 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
 
             if (
                 !currentTarget ||
-                currentTarget.value.trim() === "" ||
                 !friendId
             ) {
                 return;
