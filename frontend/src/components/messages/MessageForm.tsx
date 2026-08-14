@@ -6,11 +6,14 @@ import {
     userStartTyping,
     userStopTyping,
 } from "../../lib/socket";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import IconLabel from "../IconLabel";
 import { uploadFiles } from "../../api/files";
+import FilesPlaceholder from "./files/FilesPlaceholder";
 
 export default function MessageForm({ friendId }: { friendId?: number }) {
+    const [files, setFiles] = useState<File[]>([]);
+
     async function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -43,10 +46,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
 
-            if (
-                !currentTarget ||
-                !friendId
-            ) {
+            if (!currentTarget || !friendId) {
                 return;
             }
 
@@ -79,23 +79,31 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
 
     return (
         <form
-            className="flex p-3 border m-2 rounded-full gap-2 focus-within:outline-1"
+            className="flex flex-col p-3 border m-2 rounded-full gap-2 focus-within:outline-1"
             onSubmit={handleSubmitMessage}
         >
-            <IconLabel inputId="files">
-                <input
-                    type="file"
-                    name="files"
-                    id="files"
-                    multiple
-                    className="hidden"
-                />
-                <Plus />
-            </IconLabel>
-            <TextArea onKeyDown={handleKeyDown} onInput={handleInput} />
-            <IconButton>
-                <Mic />
-            </IconButton>
+            <FilesPlaceholder files={files} />
+            <div className="flex gap-2">
+                <IconLabel inputId="files">
+                    <input
+                        type="file"
+                        name="files"
+                        id="files"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => {
+                            if (!e.currentTarget.files) return;
+
+                            setFiles(Array.from(e.currentTarget.files));
+                        }}
+                    />
+                    <Plus />
+                </IconLabel>
+                <TextArea onKeyDown={handleKeyDown} onInput={handleInput} />
+                <IconButton>
+                    <Mic />
+                </IconButton>
+            </div>
         </form>
     );
 }
