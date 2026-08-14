@@ -10,7 +10,7 @@ export class MessageService {
         private fileRepository: IFileRepository,
     ) {}
 
-    createMessage(data: {
+    async createMessage(data: {
         content: string | null;
         type: "private" | "group";
         attachments: { fileId: number }[];
@@ -18,13 +18,25 @@ export class MessageService {
         senderId: number;
         conversationId: string;
     }) {
-        const message = {
+        const paramMessage = {
             ...data,
             receiverId: undefined,
             createdAt: new Date(),
         };
 
-        return this.messagesRepository.create(message);
+        const message = await this.messagesRepository.create(paramMessage);
+
+        const filesIds = message.attachments.map((att) => att.fileId);
+
+        const files =
+            filesIds.length > 0
+                ? await this.fileRepository.getFilesByIds(filesIds)
+                : [];
+
+        return {
+            ...message,
+            attachments: files.map((file) => ({ file, fileId: file.id })),
+        };
     }
 
     async listMessages(

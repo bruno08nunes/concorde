@@ -36,6 +36,8 @@ export function registerMessageEvents(io: Server, socket: Socket) {
             socket.emit("error", {
                 message: "Você não pode enviar mensagem para essa pessoa.",
             });
+
+            return;
         }
 
         const result = await messageService.createMessage({
