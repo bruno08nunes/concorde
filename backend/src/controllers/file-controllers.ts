@@ -13,14 +13,16 @@ export async function uploadFileController(req: Request, res: Response) {
                 filename: z.string(),
                 mimetype: z.string(),
                 size: z.number(),
+                originalname: z.string(),
             }),
         ),
     });
     const files = z.parse(uploadFileBodySchema, req).files.map((file) => ({
-        filename: file.filename,
+        filename: file.originalname,
         mimeType: file.mimetype,
         size: file.size,
         type: mimeTypeToFileType(file.mimetype),
+        url: file.filename,
     }));
 
     const newFiles = await fileService.uploadFiles(files);

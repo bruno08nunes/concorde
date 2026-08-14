@@ -10,10 +10,9 @@ export class FileService {
             mimeType: string;
             size: number;
             type: FileType;
+            url: string;
         }[],
     ) {
-        return this.friendshipRepository.uploadFiles(
-            files.map((file) => ({ ...file, url: file.filename })),
-        );
+        return this.friendshipRepository.uploadFiles(files);
     }
 }
