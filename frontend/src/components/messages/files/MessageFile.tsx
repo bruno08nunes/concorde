@@ -27,7 +27,7 @@ export default function MessageFile({ file }: { file?: ChatFile }) {
     }
 
     if (file.type === "AUDIO") {
-        return <audio src={`${env.VITE_API_URL}/uploads/${file.url}`}></audio>;
+        return <audio src={`${env.VITE_API_URL}/uploads/${file.url}`} controls></audio>;
     }
 
     if (file.type === "PDF") {
