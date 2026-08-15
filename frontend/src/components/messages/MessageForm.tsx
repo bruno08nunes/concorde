@@ -18,18 +18,23 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         e.preventDefault();
         const formData = new FormData(e.target);
         const message = formData.get("message")?.toString();
-        const files = formData.getAll("files");
+        const formFIles = formData
+            .getAll("files")
+            .filter((file): file is File => file instanceof File)
+            .filter((file) => file.type !== "application/octet-stream");
+        e.currentTarget.reset();
 
         const isEmpty =
-            (!message || message?.trim() === "") && files.length === 0;
+            (!message || message?.trim() === "") && formFIles.length === 0;
 
         if (isEmpty || !friendId) {
             return;
         }
 
         let filesIds: { fileId: number }[] = [];
-        if (files.length > 0) {
+        if (formFIles.length > 0) {
             filesIds = await uploadFiles(formData);
+            setFiles([]);
         }
 
         sendMessageToSocket({
@@ -58,6 +63,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
             e.currentTarget.value = "";
             userStopTyping(friendId);
             isTyping.current = false;
+            e.currentTarget.style.height = "auto";
             return;
         }
     }

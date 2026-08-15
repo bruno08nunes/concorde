@@ -18,10 +18,10 @@ export function registerMessageEvents(io: Server, socket: Socket) {
             error,
         } = sendMessageSchema.safeParse(data);
 
-        if (!success) {
+        if (!success || (message.attachments.length === 0 && message.content === "")) {
             socket.emit("error", {
                 message: "Mensagem inválida",
-                errors: error.flatten(),
+                errors: error?.flatten(),
             });
             return;
         }
