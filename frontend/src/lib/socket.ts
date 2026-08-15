@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
+import { env } from "./env";
 
-export const socket = io("http://localhost:3333", {
+export const socket = io(env.VITE_API_URL, {
     autoConnect: false,
 });
 

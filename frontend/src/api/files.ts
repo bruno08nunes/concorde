@@ -1,7 +1,8 @@
+import { env } from "../lib/env";
 import type { ChatFile } from "../types/files";
 
 export async function uploadFiles(formData: FormData) {
-    const res = await fetch("http://localhost:3333/files", {
+    const res = await fetch(`${env.VITE_API_URL}/files`, {
         method: "POST",
         body: formData,
     });
@@ -12,7 +13,7 @@ export async function uploadFiles(formData: FormData) {
 }
 
 export async function downloadPdf(pdfName: string) {
-    const res = await fetch("http://localhost:3333/uploads/" + pdfName);
+    const res = await fetch(`${env.VITE_API_URL}/uploads/${pdfName}`);
     const blob = await res.blob();
     return blob;
 }

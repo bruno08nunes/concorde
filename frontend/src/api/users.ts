@@ -1,7 +1,8 @@
+import { env } from "../lib/env";
 import type { IUserItem, User } from "../types/users";
 
 export async function getUserByUsername(username: string, token: string) {
-    const res = await fetch(`http://localhost:3333/user/${username}`, {
+    const res = await fetch(`${env.VITE_API_URL}/user/${username}`, {
         headers: {
             Authorization: "Bearer " + token,
         },
@@ -21,7 +22,7 @@ export async function getUserByUsername(username: string, token: string) {
 }
 
 export async function getUsersByUsername(username: string) {
-    const res = await fetch(`http://localhost:3333/users/${username}`);
+    const res = await fetch(`${env.VITE_API_URL}/users/${username}`);
 
     if (!res.ok) {
         throw new Error("Erro ao buscar usuários.");

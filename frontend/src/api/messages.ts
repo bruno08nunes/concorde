@@ -1,3 +1,4 @@
+import { env } from "../lib/env";
 import type { SendMessage } from "../types/messages";
 
 export async function getMessages(
@@ -7,7 +8,7 @@ export async function getMessages(
     limit: number = 30,
 ) {
     const res = await fetch(
-        `http://localhost:3333/messages/${receiverId}?limit=${limit}${before ? "&before=" + before : ""}`,
+        `${env.VITE_API_URL}/messages/${receiverId}?limit=${limit}${before ? "&before=" + before : ""}`,
         {
             headers: {
                 Authorization: "Bearer " + token,

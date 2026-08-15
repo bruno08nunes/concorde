@@ -2,7 +2,7 @@ import { env } from "../lib/env";
 import type { User } from "../types/users";
 
 export async function getMe(token: string) {
-    const res = await fetch("http://localhost:3333/auth/me", {
+    const res = await fetch(`${env.VITE_API_URL}/auth/me`, {
         headers: {
             Authorization: "Bearer " + token
         }

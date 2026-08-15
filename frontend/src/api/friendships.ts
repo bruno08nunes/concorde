@@ -1,8 +1,9 @@
+import { env } from "../lib/env";
 import type { Friendship } from "../types/friendship";
 import type { User } from "../types/users";
 
 export async function getFriends(token: string) {
-    const res = await fetch("http://localhost:3333/friendships", {
+    const res = await fetch(`${env.VITE_API_URL}/friendships`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -30,7 +31,7 @@ export async function listPendingFriendshipRequests({
 }: {
     token: string;
 }) {
-    const res = await fetch("http://localhost:3333/friendship/requests", {
+    const res = await fetch(`${env.VITE_API_URL}/friendship/requests`, {
         headers: {
             Authorization: "Bearer " + token,
         },
@@ -63,7 +64,7 @@ export async function sendFriendshipRequest({
     receiverId: number;
     token: string;
 }) {
-    const res = await fetch("http://localhost:3333/friendship/request", {
+    const res = await fetch(`${env.VITE_API_URL}/friendship/request`, {
         method: "POST",
         body: JSON.stringify({ receiverId }),
         headers: {
@@ -97,7 +98,7 @@ export async function declineFriendshipRequest({
     requestId: number;
 }) {
     const res = await fetch(
-        "http://localhost:3333/friendship/request/" + requestId + "/decline",
+        `${env.VITE_API_URL}/friendship/request/${requestId}/decline`,
         {
             method: "PATCH",
             headers: {
@@ -127,7 +128,7 @@ export async function acceptFriendshipRequest({
     requestId: number;
 }) {
     const res = await fetch(
-        "http://localhost:3333/friendship/request/" + requestId + "/accept",
+        `${env.VITE_API_URL}/friendship/request/${requestId}/accept`,
         {
             method: "POST",
             headers: {
