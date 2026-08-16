@@ -5,7 +5,7 @@ import { getUserByUsername } from "../api/users";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Messages from "../components/messages/Messages";
 import MessagePageHeader from "../components/messages/MessagePageHeader";
-import MessageForm from "../components/messages/MessageForm";
+import MessageForm from "../components/messages/form/MessageForm";
 import { useConversationRoom } from "../hooks/useConversationRoom";
 import type { SendMessage } from "../types/messages";
 
@@ -20,27 +20,33 @@ export default function MessagesPage() {
 
     const queryClient = useQueryClient();
     useSocketEvent("sendMessage", (message) => {
-        queryClient.setQueryData(["messages", friend!.id], (oldData: { pages: SendMessage[][]}) => {
-            if (!oldData) return oldData;
-            
-            return {
-                ...oldData,
-                pages: oldData.pages.map((page, index) => {
-                    if (index !== 0) return page;
+        queryClient.setQueryData(
+            ["messages", friend!.id],
+            (oldData: { pages: SendMessage[][] }) => {
+                if (!oldData) return oldData;
 
-                    const messages = [...page, message];
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page, index) => {
+                        if (index !== 0) return page;
 
-                    return messages;
-                }),
-            };
-        });
+                        const messages = [...page, message];
+
+                        return messages;
+                    }),
+                };
+            },
+        );
     });
 
     useConversationRoom(friend?.id);
 
     return (
         <>
-            <MessagePageHeader username={username!} isOnline={friend?.isOnline} />
+            <MessagePageHeader
+                username={username!}
+                isOnline={friend?.isOnline}
+            />
             <hr />
             {friend && (
                 <Messages

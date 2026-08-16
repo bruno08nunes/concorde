@@ -1,18 +1,20 @@
 import { Mic, Plus } from "lucide-react";
-import IconButton from "../IconButton";
-import TextArea from "../form/TextArea";
+import IconButton from "../../IconButton";
+import TextArea from "../../form/TextArea";
 import {
     sendMessageToSocket,
     userStartTyping,
     userStopTyping,
-} from "../../lib/socket";
+} from "../../../lib/socket";
 import { useRef, useState } from "react";
-import IconLabel from "../IconLabel";
-import { uploadFiles } from "../../api/files";
-import FilesPlaceholder from "./files/FilesPlaceholder";
+import IconLabel from "../../IconLabel";
+import { uploadFiles } from "../../../api/files";
+import FilesPlaceholder from "../files/FilesPlaceholder";
+import SpeechRecognitionButton from "./SpeechRecognitionButton";
 
 export default function MessageForm({ friendId }: { friendId?: number }) {
     const [files, setFiles] = useState<File[]>([]);
+    const [text, setText] = useState("");
 
     async function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -23,6 +25,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
             .filter((file): file is File => file instanceof File)
             .filter((file) => file.type !== "application/octet-stream");
         e.currentTarget.reset();
+        setText("");
 
         const isEmpty =
             (!message || message?.trim() === "") && formFIles.length === 0;
@@ -71,6 +74,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
     const isTyping = useRef(false);
     function handleInput(e: React.InputEvent<HTMLTextAreaElement>) {
         const value = e.currentTarget.value.trim();
+        setText(value);
 
         if (value && !isTyping.current) {
             isTyping.current = true;
@@ -78,6 +82,20 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         }
 
         if (!value && isTyping.current) {
+            isTyping.current = false;
+            userStopTyping(friendId!);
+        }
+    }
+
+    function handleRecord(text: string) {
+        setText(text);
+
+        if (text && !isTyping.current) {
+            isTyping.current = true;
+            userStartTyping(friendId!);
+        }
+
+        if (!text && isTyping.current) {
             isTyping.current = false;
             userStopTyping(friendId!);
         }
@@ -105,7 +123,12 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
                     />
                     <Plus />
                 </IconLabel>
-                <TextArea onKeyDown={handleKeyDown} onInput={handleInput} />
+                <TextArea
+                    onKeyDown={handleKeyDown}
+                    onInput={handleInput}
+                    value={text}
+                />
+                <SpeechRecognitionButton onRecord={handleRecord} />
                 <IconButton>
                     <Mic />
                 </IconButton>
