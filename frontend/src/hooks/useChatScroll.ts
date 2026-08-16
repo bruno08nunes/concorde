@@ -22,6 +22,7 @@ export function useChatScroll(
         hasScrolledInitially.current = false;
     }, [conversationId]);
 
+    // Initial scroll
     useEffect(() => {
         if (hasScrolledInitially.current) return;
         if (!chatRef.current) return;
@@ -31,6 +32,7 @@ export function useChatScroll(
         hasScrolledInitially.current = true;
     }, [dependency]);
 
+    // Scroll down on receive message if is close to bottom
     useEffect(() => {
         if (!chatRef.current || !hasScrolledInitially.current) return;
 
@@ -64,6 +66,7 @@ export function useChatScroll(
         setHasNewMessages(true);
     }, [dependency, user?.id]);
 
+    // Scroll down on friend start typing if is close to bottom
     useEffect(() => {
         const element = chatRef.current;
 

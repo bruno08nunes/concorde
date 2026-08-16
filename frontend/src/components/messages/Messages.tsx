@@ -41,7 +41,7 @@ export default function Messages({
     });
 
     const messages = data?.pages.flat();
-    const hasMessages = data?.pages.length === 0;
+    const hasMessages = data?.pages.length !== 0;
 
     const [isFriendTyping, setIsFriendTyping] = useState(false);
 
@@ -107,7 +107,7 @@ export default function Messages({
                 <div className="text-center text-lg">Início da Conversa</div>
             )}
             <Loader condition={isLoading || isFetchingNextPage} />
-            {hasMessages && (
+            {!hasMessages && (
                 <div className="text-center text-xl">
                     Nenhuma mensagem. Inicie a conversa.
                 </div>

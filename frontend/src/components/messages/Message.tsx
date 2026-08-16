@@ -7,7 +7,7 @@ interface MessageProps {
     message: string;
     isOwnMessage?: boolean;
     date?: string;
-    files: { file?: ChatFile; fileId: number }[];
+    files?: { file?: ChatFile; fileId: number }[];
 }
 
 export default function Message({
