@@ -108,7 +108,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
             onSubmit={handleSubmitMessage}
         >
             <FilesPlaceholder files={files} />
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
                 <FileInput setFiles={setFiles} />
                 <TextArea
                     onKeyDown={handleKeyDown}

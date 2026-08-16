@@ -35,7 +35,7 @@ export default function TextArea({
             ref={textareaRef}
             id="message"
             name="message"
-            className="flex-1 p-1 focus:outline-0 overflow-y-auto max-h-48 resize-none h-9.5"
+            className="flex-1 p-1 focus:outline-0 overflow-y-auto max-h-48 resize-none h-9.5 custom-scrollbar"
             onInput={handleInput}
             placeholder="Digite uma mensagem..."
             rows={1}
