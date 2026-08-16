@@ -20,31 +20,29 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
 
     async function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const message = formData.get("message")?.toString();
-        const formFIles = formData
-            .getAll("files")
-            .filter((file): file is File => file instanceof File)
-            .filter((file) => file.type !== "application/octet-stream");
+
+        const formData = new FormData();
+        files.forEach((file) => {
+            formData.append("files", file);
+        });
+
         e.currentTarget.reset();
-        setIsRecordingTranscription(false);
         setText("");
+        setIsRecordingTranscription(false);
 
-        const isEmpty =
-            (!message || message?.trim() === "") && formFIles.length === 0;
-
+        const isEmpty = text.trim() === "" && files.length === 0;
         if (isEmpty || !friendId) {
             return;
         }
 
         let filesIds: { fileId: number }[] = [];
-        if (formFIles.length > 0) {
+        if (files.length > 0) {
             filesIds = await uploadFiles(formData);
             setFiles([]);
         }
 
         sendMessageToSocket({
-            content: message,
+            content: text,
             type: "private",
             attachments: filesIds,
             receiverId: friendId,
@@ -76,8 +74,8 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
 
     const isTyping = useRef(false);
     function handleInput(e: React.InputEvent<HTMLTextAreaElement>) {
+        setText(e.currentTarget.value);
         const value = e.currentTarget.value.trim();
-        setText(value);
 
         if (value && !isTyping.current) {
             isTyping.current = true;
@@ -119,9 +117,20 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
                         multiple
                         className="hidden"
                         onChange={(e) => {
-                            if (!e.currentTarget.files) return;
+                            const newFiles = e.currentTarget.files
+                                ? Array.from(e.currentTarget.files).filter(
+                                      (file) =>
+                                          file.type !==
+                                          "application/octet-stream",
+                                  )
+                                : null;
 
-                            setFiles(Array.from(e.currentTarget.files));
+                            if (!newFiles || newFiles.length === 0) {
+                                setFiles([]);
+                                return;
+                            }
+
+                            setFiles(newFiles);
                         }}
                     />
                     <Plus />
