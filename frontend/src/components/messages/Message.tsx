@@ -28,7 +28,7 @@ export default function Message({
                 </>
             )}
             <div className="flex flex-col gap-4">
-                {files.map(({ file }) => (
+                {files?.map(({ file }) => (
                     <MessageFile key={file?.id} file={file} />
                 ))}
             </div>
