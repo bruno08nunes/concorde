@@ -1,4 +1,4 @@
-import { Mic, Plus } from "lucide-react";
+import { Mic } from "lucide-react";
 import IconButton from "../../IconButton";
 import TextArea from "../../form/TextArea";
 import {
@@ -7,10 +7,10 @@ import {
     userStopTyping,
 } from "../../../lib/socket";
 import { useRef, useState } from "react";
-import IconLabel from "../../IconLabel";
 import { uploadFiles } from "../../../api/files";
 import FilesPlaceholder from "../files/FilesPlaceholder";
 import SpeechRecognitionButton from "./SpeechRecognitionButton";
+import FileInput from "../../form/FileInput";
 
 export default function MessageForm({ friendId }: { friendId?: number }) {
     const [files, setFiles] = useState<File[]>([]);
@@ -109,32 +109,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         >
             <FilesPlaceholder files={files} />
             <div className="flex gap-2">
-                <IconLabel inputId="files">
-                    <input
-                        type="file"
-                        name="files"
-                        id="files"
-                        multiple
-                        className="hidden"
-                        onChange={(e) => {
-                            const newFiles = e.currentTarget.files
-                                ? Array.from(e.currentTarget.files).filter(
-                                      (file) =>
-                                          file.type !==
-                                          "application/octet-stream",
-                                  )
-                                : null;
-
-                            if (!newFiles || newFiles.length === 0) {
-                                setFiles([]);
-                                return;
-                            }
-
-                            setFiles(newFiles);
-                        }}
-                    />
-                    <Plus />
-                </IconLabel>
+                <FileInput setFiles={setFiles} />
                 <TextArea
                     onKeyDown={handleKeyDown}
                     onInput={handleInput}
