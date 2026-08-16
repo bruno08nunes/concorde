@@ -15,6 +15,8 @@ import SpeechRecognitionButton from "./SpeechRecognitionButton";
 export default function MessageForm({ friendId }: { friendId?: number }) {
     const [files, setFiles] = useState<File[]>([]);
     const [text, setText] = useState("");
+    const [isRecordingTranscription, setIsRecordingTranscription] =
+        useState(false);
 
     async function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -25,6 +27,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
             .filter((file): file is File => file instanceof File)
             .filter((file) => file.type !== "application/octet-stream");
         e.currentTarget.reset();
+        setIsRecordingTranscription(false);
         setText("");
 
         const isEmpty =
@@ -128,7 +131,11 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
                     onInput={handleInput}
                     value={text}
                 />
-                <SpeechRecognitionButton onRecord={handleRecord} />
+                <SpeechRecognitionButton
+                    onRecord={handleRecord}
+                    isRecording={isRecordingTranscription}
+                    onRecordingChange={setIsRecordingTranscription}
+                />
                 <IconButton>
                     <Mic />
                 </IconButton>

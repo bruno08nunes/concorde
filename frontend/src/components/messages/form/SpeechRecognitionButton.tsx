@@ -1,16 +1,43 @@
 import { AudioLines } from "lucide-react";
 import IconButton from "../../IconButton";
 import { toast } from "sonner";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+interface SpeechRecognitionButtonProps {
+    onRecord: (text: string) => void;
+    isRecording?: boolean;
+    onRecordingChange?: (isRecording: boolean) => void;
+}
 
 export default function SpeechRecognitionButton({
     onRecord,
-}: {
-    onRecord: (string: string) => void;
-}) {
-    const [isRecording, setIsRecording] = useState(false);
+    isRecording: controlledIsRecording,
+    onRecordingChange,
+}: SpeechRecognitionButtonProps) {
+    const [internalIsRecording, setInternalIsRecording] = useState(false);
+
+    const isControlled = controlledIsRecording !== undefined;
+
+    const isRecording = isControlled
+        ? controlledIsRecording
+        : internalIsRecording;
+
+    function setIsRecording(value: boolean) {
+        if (!isControlled) {
+            setInternalIsRecording(value);
+        }
+
+        onRecordingChange?.(value);
+    }
 
     const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+    useEffect(() => {
+        if (!isRecording) {
+            recognitionRef.current?.stop();
+            recognitionRef.current = null;
+        }
+    }, [isRecording]);
 
     function handleStartRecording() {
         const isSpeechRecognitionAPIAvailable =
@@ -35,12 +62,9 @@ export default function SpeechRecognitionButton({
         recognition.interimResults = true;
 
         recognition.onresult = (e) => {
-            const transcript = Array.from(e.results).reduce(
-                (text, result) => {
-                    return text.concat(result[0].transcript);
-                },
-                "",
-            );
+            const transcript = Array.from(e.results).reduce((text, result) => {
+                return text.concat(result[0].transcript);
+            }, "");
 
             onRecord(transcript);
         };
