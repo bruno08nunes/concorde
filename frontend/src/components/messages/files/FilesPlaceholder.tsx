@@ -24,7 +24,7 @@ export default function FilesPlaceholder({ files }: { files: File[] }) {
             <>
                 <div className="flex gap-3 justify-center flex-wrap px-10">
                     {files.map((file) => (
-                        <span>
+                        <span key={file.lastModified}>
                             | {getFileSymbol(file.type)}
                             {file.name} |
                         </span>
