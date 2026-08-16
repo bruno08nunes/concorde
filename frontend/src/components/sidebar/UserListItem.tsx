@@ -7,7 +7,7 @@ interface UserListItemProps {
     name: string;
     baseURL: string;
     isOnline?: boolean;
-    hasNewMessages: boolean;
+    hasNewMessages?: boolean;
 }
 
 export default function UserListItem({

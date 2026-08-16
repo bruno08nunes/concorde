@@ -15,7 +15,7 @@ export default function Sidebar() {
     const [isFriendListActive, setIsFriendListActive] = useState(true);
 
     const { token, logout } = useAuthStore();
-    const { data, error } = useQuery({
+    const { data: userData, error } = useQuery({
         queryKey: ["me"],
         queryFn: () => getMe(token!),
         retry: 0,
@@ -45,8 +45,8 @@ export default function Sidebar() {
             )}
             <hr />
             <div className="flex items-center gap-4 p-1">
-                <ProfilePicture imgURL={data && data.profilePicture?.url || null} />
-                <span className="text-xl flex-1">{data?.username}</span>
+                <ProfilePicture imgURL={userData && userData.profilePicture?.url || null} />
+                <span className="text-xl flex-1">{userData?.username}</span>
                 <IconLink to="/notificacoes">
                     <Bell />
                 </IconLink>
