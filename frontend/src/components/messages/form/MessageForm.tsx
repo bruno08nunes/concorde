@@ -1,5 +1,3 @@
-import { Mic } from "lucide-react";
-import IconButton from "../../IconButton";
 import TextArea from "../../form/TextArea";
 import {
     sendMessageToSocket,
@@ -11,12 +9,17 @@ import { uploadFiles } from "../../../api/files";
 import FilesPlaceholder from "../files/FilesPlaceholder";
 import SpeechRecognitionButton from "./SpeechRecognitionButton";
 import FileInput from "../../form/FileInput";
+import RecordAudioButton from "./RecordAudioButton";
+import RecordingAudio from "./RecordingAudio";
+import IconButton from "../../IconButton";
+import { StopCircle, Trash2 } from "lucide-react";
 
 export default function MessageForm({ friendId }: { friendId?: number }) {
-    const [files, setFiles] = useState<File[]>([]);
     const [text, setText] = useState("");
+    const [files, setFiles] = useState<File[]>([]);
     const [isRecordingTranscription, setIsRecordingTranscription] =
         useState(false);
+    const [isRecordingAudio, setIsRecordingAudio] = useState(false);
 
     async function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -88,7 +91,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         }
     }
 
-    function handleRecord(text: string) {
+    function handleRecordTranscription(text: string) {
         setText(text);
 
         if (text && !isTyping.current) {
@@ -102,6 +105,27 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         }
     }
 
+    async function handleRecordAudio(audio: Blob) {
+        if (!friendId) {
+            return;
+        }
+
+        const formData = new FormData();
+        const file = new File([audio], "audio.webm", {
+            type: audio.type,
+        });
+        formData.append("files", file);
+
+        const filesIds = await uploadFiles(formData);
+
+        sendMessageToSocket({
+            content: "",
+            type: "private",
+            attachments: filesIds,
+            receiverId: friendId,
+        });
+    }
+
     return (
         <form
             className="flex flex-col p-3 border m-2 rounded-full gap-2 focus-within:outline-1"
@@ -109,20 +133,36 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         >
             <FilesPlaceholder files={files} />
             <div className="flex gap-2 items-center">
-                <FileInput setFiles={setFiles} />
-                <TextArea
-                    onKeyDown={handleKeyDown}
-                    onInput={handleInput}
-                    value={text}
+                {isRecordingAudio ? (
+                    <>
+                        <RecordingAudio />
+                        <IconButton>
+                            <Trash2 />
+                        </IconButton>
+                        <IconButton>
+                            <StopCircle />
+                        </IconButton>
+                    </>
+                ) : (
+                    <>
+                        <FileInput setFiles={setFiles} />
+                        <TextArea
+                            onKeyDown={handleKeyDown}
+                            onInput={handleInput}
+                            value={text}
+                        />
+                        <SpeechRecognitionButton
+                            onRecord={handleRecordTranscription}
+                            isRecording={isRecordingTranscription}
+                            onRecordingChange={setIsRecordingTranscription}
+                        />
+                    </>
+                )}
+                <RecordAudioButton
+                    onRecord={handleRecordAudio}
+                    isRecording={isRecordingAudio}
+                    onRecordingChange={setIsRecordingAudio}
                 />
-                <SpeechRecognitionButton
-                    onRecord={handleRecord}
-                    isRecording={isRecordingTranscription}
-                    onRecordingChange={setIsRecordingTranscription}
-                />
-                <IconButton>
-                    <Mic />
-                </IconButton>
             </div>
         </form>
     );
