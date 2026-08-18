@@ -1,4 +1,4 @@
-import { Mic } from "lucide-react";
+import { Mic, StopCircle, Trash2 } from "lucide-react";
 import IconButton from "../../IconButton";
 import { useRef, useState } from "react";
 
@@ -6,12 +6,16 @@ interface RecordAudioButtonProps {
     onRecord: (audio: Blob) => void;
     isRecording?: boolean;
     onRecordingChange?: (isRecording: boolean) => void;
+    hasPauseAudioButton?: boolean;
+    hasDeleteAudioButton?: boolean;
 }
 
 export default function RecordAudioButton({
     onRecord,
     isRecording: controlledIsRecording,
     onRecordingChange,
+    hasDeleteAudioButton = true,
+    hasPauseAudioButton: hasStopAudioButton = true,
 }: RecordAudioButtonProps) {
     const [internalIsRecording, setInternalIsRecording] = useState(false);
 
@@ -75,11 +79,25 @@ export default function RecordAudioButton({
     }
 
     return (
-        <IconButton
-            onClick={isRecording ? handleStopRecording : handleStartRecording}
-            isActive={isRecording}
-        >
-            <Mic />
-        </IconButton>
+        <>
+            {isRecording && hasDeleteAudioButton && (
+                <IconButton>
+                    <Trash2 />
+                </IconButton>
+            )}
+            {isRecording && hasStopAudioButton && (
+                <IconButton>
+                    <StopCircle />
+                </IconButton>
+            )}
+            <IconButton
+                onClick={
+                    isRecording ? handleStopRecording : handleStartRecording
+                }
+                isActive={isRecording}
+            >
+                <Mic />
+            </IconButton>
+        </>
     );
 }

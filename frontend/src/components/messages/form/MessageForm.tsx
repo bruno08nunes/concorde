@@ -11,8 +11,6 @@ import SpeechRecognitionButton from "./SpeechRecognitionButton";
 import FileInput from "../../form/FileInput";
 import RecordAudioButton from "./RecordAudioButton";
 import RecordingAudio from "./RecordingAudio";
-import IconButton from "../../IconButton";
-import { StopCircle, Trash2 } from "lucide-react";
 
 export default function MessageForm({ friendId }: { friendId?: number }) {
     const [text, setText] = useState("");
@@ -134,15 +132,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
             <FilesPlaceholder files={files} />
             <div className="flex gap-2 items-center">
                 {isRecordingAudio ? (
-                    <>
-                        <RecordingAudio />
-                        <IconButton>
-                            <Trash2 />
-                        </IconButton>
-                        <IconButton>
-                            <StopCircle />
-                        </IconButton>
-                    </>
+                    <RecordingAudio />
                 ) : (
                     <>
                         <FileInput setFiles={setFiles} />
