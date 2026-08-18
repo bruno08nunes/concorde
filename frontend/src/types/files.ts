@@ -7,3 +7,5 @@ export interface ChatFile {
     type: "IMAGE" | "VIDEO" | "AUDIO" | "PDF";
     createdAt: Date;
 }
+
+export type AudioStatus = "stopped" | "paused" | "recording";

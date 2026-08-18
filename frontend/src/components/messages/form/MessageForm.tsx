@@ -11,13 +11,14 @@ import SpeechRecognitionButton from "./SpeechRecognitionButton";
 import FileInput from "../../form/FileInput";
 import RecordAudioButton from "./RecordAudioButton";
 import RecordingAudio from "./RecordingAudio";
+import type { AudioStatus } from "../../../types/files";
 
 export default function MessageForm({ friendId }: { friendId?: number }) {
     const [text, setText] = useState("");
     const [files, setFiles] = useState<File[]>([]);
     const [isRecordingTranscription, setIsRecordingTranscription] =
         useState(false);
-    const [isRecordingAudio, setIsRecordingAudio] = useState(false);
+    const [recordingAudioStatus, setRecordingAudioState] = useState<AudioStatus>("stopped");
 
     async function handleSubmitMessage(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -131,8 +132,8 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
         >
             <FilesPlaceholder files={files} />
             <div className="flex gap-2 items-center">
-                {isRecordingAudio ? (
-                    <RecordingAudio />
+                {recordingAudioStatus !== "stopped" ? (
+                    <RecordingAudio isRecording={recordingAudioStatus === "recording"} />
                 ) : (
                     <>
                         <FileInput setFiles={setFiles} />
@@ -150,8 +151,8 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
                 )}
                 <RecordAudioButton
                     onRecord={handleRecordAudio}
-                    isRecording={isRecordingAudio}
-                    onRecordingChange={setIsRecordingAudio}
+                    recordingStatus={recordingAudioStatus}
+                    onRecordingChange={setRecordingAudioState}
                 />
             </div>
         </form>

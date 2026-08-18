@@ -1,7 +1,11 @@
 import { Mic } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function RecordingAudio() {
+export default function RecordingAudio({
+    isRecording,
+}: {
+    isRecording: boolean;
+}) {
     const [totalSeconds, setTotalSeconds] = useState(0);
     const hours = Math.floor(totalSeconds / (60 * 60));
     const minutes = Math.floor(totalSeconds / 60) % 60;
@@ -9,6 +13,10 @@ export default function RecordingAudio() {
 
     useEffect(() => {
         const timerId = setInterval(() => {
+            if (!isRecording) {
+                return;
+            }
+
             setTotalSeconds((prevSeconds) => prevSeconds + 1);
         }, 1000);
 
