@@ -27,6 +27,14 @@ export function userStopTyping(conversationId: number) {
     socket.emit("userStopTyping", { conversationId });
 }
 
+export function userStartRecording(conversationId: number) {
+    socket.emit("userRecording", { conversationId });
+}
+
+export function userStopRecording(conversationId: number) {
+    socket.emit("userStopRecording", { conversationId });
+}
+
 export function joinConversation(conversationId: number) {
     socket.emit("joinConversation", {
         receiverId: conversationId,

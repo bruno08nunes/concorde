@@ -1,7 +1,14 @@
-import { ChevronRight, Mic, PlayCircle, StopCircle, Trash2 } from "lucide-react";
+import {
+    ChevronRight,
+    Mic,
+    PlayCircle,
+    StopCircle,
+    Trash2,
+} from "lucide-react";
 import IconButton from "../../IconButton";
 import { useRef, useState } from "react";
 import type { AudioStatus } from "../../../types/files";
+import { userStartRecording, userStopRecording } from "../../../lib/socket";
 
 interface RecordAudioButtonProps {
     onRecord: (audio: Blob) => void;
@@ -9,6 +16,7 @@ interface RecordAudioButtonProps {
     onRecordingChange?: (recordingStatus: AudioStatus) => void;
     hasPauseAudioButton?: boolean;
     hasDeleteAudioButton?: boolean;
+    conversationId?: number;
 }
 
 export default function RecordAudioButton({
@@ -17,6 +25,7 @@ export default function RecordAudioButton({
     onRecordingChange,
     hasDeleteAudioButton = true,
     hasPauseAudioButton: hasStopAudioButton = true,
+    conversationId,
 }: RecordAudioButtonProps) {
     const [internalRecordingStatus, setInternalRecordingStatus] =
         useState<AudioStatus>("stopped");
@@ -78,6 +87,9 @@ export default function RecordAudioButton({
 
         mediaRecorderRef.current = mediaRecorder;
         setRecordingStatus("recording");
+        if (conversationId) {
+            userStartRecording(conversationId);
+        }
     }
 
     function handleStopRecording() {
@@ -89,6 +101,9 @@ export default function RecordAudioButton({
         mediaStreamRef.current = null;
 
         setRecordingStatus("stopped");
+        if (conversationId) {
+            userStopRecording(conversationId);
+        }
     }
 
     function handleDeleteRecording() {

@@ -18,7 +18,10 @@ export function registerMessageEvents(io: Server, socket: Socket) {
             error,
         } = sendMessageSchema.safeParse(data);
 
-        if (!success || (message.attachments.length === 0 && message.content === "")) {
+        if (
+            !success ||
+            (message.attachments.length === 0 && message.content === "")
+        ) {
             socket.emit("error", {
                 message: "Mensagem inválida",
                 errors: error?.flatten(),
@@ -70,6 +73,28 @@ export function registerMessageEvents(io: Server, socket: Socket) {
         );
         const newConversationId = `${firstId}_${secondId}`;
         socket.to(newConversationId).emit("userStopTyping", {
+            userId: socket.data.user.id,
+        });
+    });
+
+    socket.on("userRecording", ({ conversationId }) => {
+        const [firstId, secondId] = orderIds(
+            socket.data.user.id,
+            conversationId,
+        );
+        const newConversationId = `${firstId}_${secondId}`;
+        socket.to(newConversationId).emit("userRecording", {
+            userId: socket.data.user.id,
+        });
+    });
+
+    socket.on("userStopRecording", ({ conversationId }) => {
+        const [firstId, secondId] = orderIds(
+            socket.data.user.id,
+            conversationId,
+        );
+        const newConversationId = `${firstId}_${secondId}`;
+        socket.to(newConversationId).emit("userStopRecording", {
             userId: socket.data.user.id,
         });
     });

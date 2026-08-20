@@ -153,6 +153,7 @@ export default function MessageForm({ friendId }: { friendId?: number }) {
                     onRecord={handleRecordAudio}
                     recordingStatus={recordingAudioStatus}
                     onRecordingChange={setRecordingAudioState}
+                    conversationId={friendId}
                 />
             </div>
         </form>

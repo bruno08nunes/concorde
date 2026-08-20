@@ -8,6 +8,7 @@ import MessagesList from "./MessagesList";
 import TypingMessage from "./TypingMessage";
 import { useScrollToBottom } from "../../hooks/useScrollToBottom";
 import ScrollDownMessagesButton from "./ScrollDownMessagesButton";
+import RecordingMessage from "./RecordingMessage";
 
 export default function Messages({
     token,
@@ -44,6 +45,7 @@ export default function Messages({
     const hasMessages = data?.pages.length !== 0;
 
     const [isFriendTyping, setIsFriendTyping] = useState(false);
+    const [isFriendRecording, setIsFriendRecording] = useState(false);
 
     const { chatRef, hasNewMessages, setHasNewMessages } = useChatScroll(
         data,
@@ -60,6 +62,12 @@ export default function Messages({
     });
     useSocketEvent("userStopTyping", () => {
         setIsFriendTyping(false);
+    });
+    useSocketEvent("userRecording", () => {
+        setIsFriendRecording(true);
+    });
+    useSocketEvent("userStopRecording", () => {
+        setIsFriendRecording(false);
     });
 
     async function handleScroll() {
@@ -114,6 +122,7 @@ export default function Messages({
             )}
             <MessagesList messages={messages} userId={userId} />
             {isFriendTyping && <TypingMessage />}
+            {isFriendRecording && <RecordingMessage />}
         </div>
     );
 }
