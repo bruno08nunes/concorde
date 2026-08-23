@@ -11,6 +11,7 @@ export default function CallModal() {
         endCall,
         localStream,
         remoteStream,
+        incomingCall,
 
         isMuted,
         toggleMicrophone,
@@ -33,7 +34,10 @@ export default function CallModal() {
                         className="rounded-full object-cover aspect-square size-50"
                         alt=""
                     />
-                    <span>Nome do Usuário está te ligando.</span>
+                    <span>
+                        Nome do Usuário está te ligando
+                        {incomingCall?.isVideoCall ? " por vídeo" : ""}.
+                    </span>
                     <div className="bg-slate-700 rounded-2xl p-2 flex gap-4">
                         <CallButton onClick={rejectCall}>
                             <PhoneOff />

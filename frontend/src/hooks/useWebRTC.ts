@@ -13,6 +13,7 @@ type CallStatus = "idle" | "calling" | "receiving" | "connected";
 interface IncomingCall {
     callerId: number;
     offer: RTCSessionDescriptionInit;
+    isVideoCall?: boolean;
 }
 
 export function useWebRTC() {
@@ -148,6 +149,7 @@ export function useWebRTC() {
         emitOffer({
             receiverId: userId,
             offer,
+            isVideoCall: hasVideo,
         });
     }
 
@@ -161,7 +163,7 @@ export function useWebRTC() {
         setOtherUserId(callerId);
         setIncomingCall(null);
 
-        await startLocalStream(false);
+        await startLocalStream(incomingCall.isVideoCall ?? false);
 
         const peerConnection = await createPeerConnection(callerId);
 
@@ -279,31 +281,35 @@ export function useWebRTC() {
         setIsCameraEnabled(false);
     }
 
-    useSocketEvent("call:offer", async ({ callerId, offer }: IncomingCall) => {
-        const peerConnection = peerConnectionRef.current;
+    useSocketEvent(
+        "call:offer",
+        async ({ callerId, offer, isVideoCall }: IncomingCall) => {
+            const peerConnection = peerConnectionRef.current;
 
-        if (peerConnection && callStatusRef.current === "connected") {
-            await peerConnection.setRemoteDescription(offer);
+            if (peerConnection && callStatusRef.current === "connected") {
+                await peerConnection.setRemoteDescription(offer);
 
-            const answer = await peerConnection.createAnswer();
+                const answer = await peerConnection.createAnswer();
 
-            await peerConnection.setLocalDescription(answer);
+                await peerConnection.setLocalDescription(answer);
 
-            emitAnswer({
-                receiverId: callerId,
-                answer,
+                emitAnswer({
+                    receiverId: callerId,
+                    answer,
+                });
+
+                return;
+            }
+
+            setIncomingCall({
+                callerId,
+                offer,
+                isVideoCall,
             });
 
-            return;
-        }
-
-        setIncomingCall({
-            callerId,
-            offer,
-        });
-
-        changeCallStatus("receiving");
-    });
+            changeCallStatus("receiving");
+        },
+    );
 
     useSocketEvent(
         "call:answer",

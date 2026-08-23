@@ -1,10 +1,11 @@
 import { Server, Socket } from "socket.io";
 
 export function registerCallEvents(io: Server, socket: Socket) {
-    socket.on("call:offer", ({ receiverId, offer }) => {
+    socket.on("call:offer", ({ receiverId, offer, isVideoCall }) => {
         io.to(`user:${receiverId}`).emit("call:offer", {
             callerId: socket.data.user.id,
             offer,
+            isVideoCall,
         });
     });
 

@@ -63,13 +63,16 @@ export function emitIceCandidate({
 export function emitOffer({
     offer,
     receiverId,
+    isVideoCall,
 }: {
     offer: RTCSessionDescriptionInit;
     receiverId: number;
+    isVideoCall?: boolean;
 }) {
     socket.emit("call:offer", {
         receiverId,
         offer,
+        isVideoCall,
     });
 }
 
