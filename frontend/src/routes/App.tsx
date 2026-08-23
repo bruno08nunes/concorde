@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/sidebar/Sidebar";
 import { Toaster } from "sonner";
 import { useSocket } from "../hooks/useSocket";
+import CallModal from "../components/CallModal";
 
 function App() {
     useSocket();
@@ -13,6 +14,7 @@ function App() {
                 <Outlet />
             </section>
             <Toaster />
+            <CallModal />
         </div>
     );
 }

@@ -46,6 +46,7 @@ export default function MessagesPage() {
             <MessagePageHeader
                 username={username!}
                 isOnline={friend?.isOnline}
+                conversationId={friend?.id}
             />
             <hr />
             {friend && (

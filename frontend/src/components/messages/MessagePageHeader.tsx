@@ -1,17 +1,20 @@
-import { LucideUserPlus2, PhoneCall, Video } from "lucide-react";
+import { LucideUserPlus2 } from "lucide-react";
 import IconButton from "../IconButton";
 import UserOnlineIcon from "../UserOnlineIcon";
+import CallButtons from "./CallButtons";
 
 interface MessagePageHeaderProps {
     username: string;
     profilePictureUrl?: string;
     isOnline?: boolean;
+    conversationId?: number;
 }
 
 export default function MessagePageHeader({
     username,
     profilePictureUrl,
     isOnline,
+    conversationId
 }: MessagePageHeaderProps) {
     return (
         <header className="flex items-center p-3 justify-between">
@@ -35,12 +38,7 @@ export default function MessagePageHeader({
                 </div>
             </span>
             <div className="flex gap-3">
-                <IconButton>
-                    <PhoneCall />
-                </IconButton>
-                <IconButton>
-                    <Video />
-                </IconButton>
+                <CallButtons conversationId={conversationId!} />
                 <IconButton>
                     <LucideUserPlus2 />
                 </IconButton>

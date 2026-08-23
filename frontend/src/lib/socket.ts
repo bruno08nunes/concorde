@@ -46,3 +46,54 @@ export function leaveConversation(conversationId: number) {
         receiverId: conversationId,
     });
 }
+
+export function emitIceCandidate({
+    candidate,
+    receiverId,
+}: {
+    receiverId: number;
+    candidate: RTCIceCandidate;
+}) {
+    socket.emit("call:ice-candidate", {
+        receiverId,
+        candidate,
+    });
+}
+
+export function emitOffer({
+    offer,
+    receiverId,
+}: {
+    offer: RTCSessionDescriptionInit;
+    receiverId: number;
+}) {
+    socket.emit("call:offer", {
+        receiverId,
+        offer,
+    });
+}
+
+export function emitAnswer({
+    answer,
+    receiverId,
+}: {
+    answer: RTCSessionDescriptionInit;
+    receiverId: number;
+}) {
+    socket.emit("call:answer", {
+        receiverId,
+        answer,
+    });
+}
+
+export function rejectCallSocket({ receiverId }: { receiverId: number }) {
+    socket.emit("call:reject", {
+        receiverId,
+    });
+}
+
+export function endCallSocket({ receiverId }: { receiverId: number }) {
+    socket.emit("call:end", {
+        receiverId,
+    });
+}

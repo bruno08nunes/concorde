@@ -12,6 +12,7 @@ import NotificationPage from "./routes/notificationPage.tsx";
 import Home from "./routes/home.tsx";
 import UserInfo from "./routes/userInfo.tsx";
 import ConfigPage from "./routes/config.tsx";
+import { WebRTCProvider } from "./contexts/WebRTCProvider.tsx";
 
 const queryClient = new QueryClient();
 
@@ -22,24 +23,24 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <Home />
+                element: <Home />,
             },
             {
                 path: "/amigos/:username",
-                element: <MessagesPage />
+                element: <MessagesPage />,
             },
             {
                 path: "/usuarios/:username",
-                element: <UserInfo />
+                element: <UserInfo />,
             },
             {
                 path: "/notificacoes",
-                element: <NotificationPage />
+                element: <NotificationPage />,
             },
             {
                 path: "/configuracoes",
-                element: <ConfigPage />
-            }
+                element: <ConfigPage />,
+            },
         ],
     },
     {
@@ -55,7 +56,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
         <StrictMode>
-            <RouterProvider router={router} />
+            <WebRTCProvider>
+                <RouterProvider router={router} />
+            </WebRTCProvider>
         </StrictMode>
     </QueryClientProvider>,
 );
