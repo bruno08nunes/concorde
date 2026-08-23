@@ -1,7 +1,7 @@
 import { LucideUserPlus2 } from "lucide-react";
 import IconButton from "../IconButton";
 import UserOnlineIcon from "../UserOnlineIcon";
-import CallButtons from "./CallButtons";
+import StartCallButtons from "./StartCallButtons";
 
 interface MessagePageHeaderProps {
     username: string;
@@ -38,7 +38,7 @@ export default function MessagePageHeader({
                 </div>
             </span>
             <div className="flex gap-3">
-                <CallButtons conversationId={conversationId!} />
+                <StartCallButtons conversationId={conversationId!} />
                 <IconButton>
                     <LucideUserPlus2 />
                 </IconButton>

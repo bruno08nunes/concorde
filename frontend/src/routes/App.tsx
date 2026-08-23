@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/sidebar/Sidebar";
 import { Toaster } from "sonner";
 import { useSocket } from "../hooks/useSocket";
-import CallModal from "../components/CallModal";
+import CallModal from "../components/call/CallModal";
 
 function App() {
     useSocket();

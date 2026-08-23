@@ -2,7 +2,7 @@ import { PhoneCall, Video } from "lucide-react";
 import IconButton from "../IconButton";
 import { useWebRTCContext } from "../../contexts/WebRTCContext";
 
-export default function CallButtons({
+export default function StartCallButtons({
     conversationId,
 }: {
     conversationId: number;
