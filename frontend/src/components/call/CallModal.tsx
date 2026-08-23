@@ -30,12 +30,17 @@ export default function CallModal() {
             {callStatus === "receiving" && (
                 <div className="flex flex-col h-full justify-center items-center gap-3 text-2xl ">
                     <img
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
+                        src={
+                            incomingCall?.callerPicture?.url ??
+                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
+                        }
                         className="rounded-full object-cover aspect-square size-50"
                         alt=""
                     />
                     <span>
-                        Nome do Usuário está te ligando
+                        {incomingCall?.callerName
+                            ? `${incomingCall.callerName} está te ligando`
+                            : "Você está recebendo uma ligação"}
                         {incomingCall?.isVideoCall ? " por vídeo" : ""}.
                     </span>
                     <div className="bg-slate-700 rounded-2xl p-2 flex gap-4">

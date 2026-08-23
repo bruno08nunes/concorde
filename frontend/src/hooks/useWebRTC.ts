@@ -14,6 +14,8 @@ interface IncomingCall {
     callerId: number;
     offer: RTCSessionDescriptionInit;
     isVideoCall?: boolean;
+    callerName?: string;
+    callerPicture?: { url: string } | null;
 }
 
 export function useWebRTC() {
@@ -283,7 +285,13 @@ export function useWebRTC() {
 
     useSocketEvent(
         "call:offer",
-        async ({ callerId, offer, isVideoCall }: IncomingCall) => {
+        async ({
+            callerId,
+            offer,
+            isVideoCall,
+            callerName,
+            callerPicture,
+        }: IncomingCall) => {
             const peerConnection = peerConnectionRef.current;
 
             if (peerConnection && callStatusRef.current === "connected") {
@@ -305,6 +313,8 @@ export function useWebRTC() {
                 callerId,
                 offer,
                 isVideoCall,
+                callerName,
+                callerPicture,
             });
 
             changeCallStatus("receiving");

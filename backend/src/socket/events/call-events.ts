@@ -1,9 +1,17 @@
 import { Server, Socket } from "socket.io";
+import PrismaUserRepository from "../../repositories/prisma/prisma-user-repository";
+
+const userRepository = new PrismaUserRepository();
 
 export function registerCallEvents(io: Server, socket: Socket) {
-    socket.on("call:offer", ({ receiverId, offer, isVideoCall }) => {
+    socket.on("call:offer", async ({ receiverId, offer, isVideoCall }) => {
+        const callerId = socket.data.user.id;
+        const caller = await userRepository.findById(callerId);
+
         io.to(`user:${receiverId}`).emit("call:offer", {
-            callerId: socket.data.user.id,
+            callerId: callerId,
+            callerName: caller?.username,
+            callerPicture: caller?.profilePicture,
             offer,
             isVideoCall,
         });
