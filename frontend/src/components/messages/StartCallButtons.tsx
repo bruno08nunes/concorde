@@ -4,15 +4,18 @@ import { useWebRTCContext } from "../../contexts/WebRTCContext";
 
 export default function StartCallButtons({
     conversationId,
+    user,
 }: {
     conversationId: number;
+    user: { username: string; profilePictureUrl: string | undefined };
 }) {
-    const { startCall } = useWebRTCContext();
+    const { startCall, setCalledUser } = useWebRTCContext();
 
     return (
         <>
             <IconButton
                 onClick={() => {
+                    setCalledUser(user);
                     startCall(conversationId, false);
                 }}
             >
@@ -20,6 +23,7 @@ export default function StartCallButtons({
             </IconButton>
             <IconButton
                 onClick={() => {
+                    setCalledUser(user);
                     startCall(conversationId, true);
                 }}
             >

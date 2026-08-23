@@ -11,6 +11,8 @@ export default function CallModal() {
         endCall,
         localStream,
         remoteStream,
+
+        calledUser,
         incomingCall,
 
         isMuted,
@@ -59,11 +61,19 @@ export default function CallModal() {
                     <span>Chamando...</span>
                     <span></span>
                     <img
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
+                        src={
+                            calledUser?.profilePictureUrl ??
+                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
+                        }
                         className="rounded-full object-cover aspect-square size-50"
                         alt=""
                     />
-                    <span>Nome do Usuário</span>
+                    <span>{calledUser?.username}</span>
+                    <div className="bg-slate-700 rounded-2xl p-2 flex gap-4">
+                        <CallButton onClick={endCall}>
+                            <PhoneOff />
+                        </CallButton>
+                    </div>
                 </div>
             )}
 

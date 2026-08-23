@@ -38,7 +38,7 @@ export default function MessagePageHeader({
                 </div>
             </span>
             <div className="flex gap-3">
-                <StartCallButtons conversationId={conversationId!} />
+                <StartCallButtons conversationId={conversationId!} user={{username, profilePictureUrl}} />
                 <IconButton>
                     <LucideUserPlus2 />
                 </IconButton>

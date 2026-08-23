@@ -32,6 +32,10 @@ export function useWebRTC() {
     const [isMuted, setIsMuted] = useState(false);
     const [isCameraEnabled, setIsCameraEnabled] = useState(false);
     const [incomingCall, setIncomingCall] = useState<IncomingCall | null>(null);
+    const [calledUser, setCalledUser] = useState<{
+        username: string;
+        profilePictureUrl: string | undefined;
+    } | null>(null);
     const [otherUserId, setOtherUserId] = useState<number | null>(null);
 
     const callStatusRef = useRef<CallStatus>("idle");
@@ -376,6 +380,8 @@ export function useWebRTC() {
 
         callStatus,
         incomingCall,
+        calledUser,
+        setCalledUser,
 
         isMuted,
         isCameraEnabled,
