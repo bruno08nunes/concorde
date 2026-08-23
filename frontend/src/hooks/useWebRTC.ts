@@ -27,9 +27,16 @@ export function useWebRTC() {
 
     const [callStatus, setCallStatus] = useState<CallStatus>("idle");
     const [isMuted, setIsMuted] = useState(false);
-    const [isCameraEnabled, setIsCameraEnabled] = useState(true);
+    const [isCameraEnabled, setIsCameraEnabled] = useState(false);
     const [incomingCall, setIncomingCall] = useState<IncomingCall | null>(null);
     const [otherUserId, setOtherUserId] = useState<number | null>(null);
+
+    const callStatusRef = useRef<CallStatus>("idle");
+
+    function changeCallStatus(status: CallStatus) {
+        callStatusRef.current = status;
+        setCallStatus(status);
+    }
 
     async function createPeerConnection(userId: number) {
         const peerConnection = new RTCPeerConnection({
@@ -64,7 +71,7 @@ export function useWebRTC() {
 
         peerConnection.onconnectionstatechange = () => {
             if (peerConnection.connectionState === "connected") {
-                setCallStatus("connected");
+                changeCallStatus("connected");
             }
 
             if (
@@ -72,7 +79,7 @@ export function useWebRTC() {
                 peerConnection.connectionState === "disconnected" ||
                 peerConnection.connectionState === "closed"
             ) {
-                setCallStatus("idle");
+                changeCallStatus("idle");
             }
         };
 
@@ -87,27 +94,50 @@ export function useWebRTC() {
         return peerConnection;
     }
 
-    async function startLocalStream() {
-        if (localStreamRef.current) {
-            return localStreamRef.current;
-        }
-
+    async function createLocalStream(hasVideo: boolean) {
         const stream = await navigator.mediaDevices.getUserMedia({
             audio: true,
-            video: true,
+            video: hasVideo,
         });
 
         localStreamRef.current = stream;
         setLocalStream(stream);
+        setIsMuted(false);
+        setIsCameraEnabled(hasVideo);
 
         return stream;
     }
 
-    async function startCall(userId: number) {
-        setOtherUserId(userId);
-        setCallStatus("calling");
+    async function startLocalStream(hasVideo: boolean) {
+        if (localStreamRef.current) {
+            return localStreamRef.current;
+        }
 
-        await startLocalStream();
+        return createLocalStream(hasVideo);
+    }
+
+    async function renegotiate() {
+        const peerConnection = peerConnectionRef.current;
+
+        if (!peerConnection || !otherUserId) {
+            return;
+        }
+
+        const offer = await peerConnection.createOffer();
+
+        await peerConnection.setLocalDescription(offer);
+
+        emitOffer({
+            receiverId: otherUserId,
+            offer,
+        });
+    }
+
+    async function startCall(userId: number, hasVideo: boolean) {
+        setOtherUserId(userId);
+        changeCallStatus("calling");
+
+        await startLocalStream(hasVideo);
 
         const peerConnection = await createPeerConnection(userId);
 
@@ -131,7 +161,7 @@ export function useWebRTC() {
         setOtherUserId(callerId);
         setIncomingCall(null);
 
-        await startLocalStream();
+        await startLocalStream(false);
 
         const peerConnection = await createPeerConnection(callerId);
 
@@ -151,8 +181,6 @@ export function useWebRTC() {
             receiverId: callerId,
             answer,
         });
-
-        setCallStatus("connected");
     }
 
     async function rejectCall() {
@@ -165,7 +193,7 @@ export function useWebRTC() {
         });
 
         setIncomingCall(null);
-        setCallStatus("idle");
+        changeCallStatus("idle");
     }
 
     async function toggleMicrophone() {
@@ -186,12 +214,36 @@ export function useWebRTC() {
 
     async function toggleCamera() {
         const stream = localStreamRef.current;
+        const peerConnection = peerConnectionRef.current;
 
-        if (!stream) {
+        if (!stream || !peerConnection) {
             return;
         }
 
         const videoTracks = stream.getVideoTracks();
+
+        if (videoTracks.length === 0) {
+            const cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+            });
+
+            const videoTrack = cameraStream.getVideoTracks()[0];
+
+            if (!videoTrack) {
+                return;
+            }
+
+            stream.addTrack(videoTrack);
+
+            peerConnection.addTrack(videoTrack, stream);
+
+            setLocalStream(stream);
+            setIsCameraEnabled(true);
+
+            await renegotiate();
+
+            return;
+        }
 
         videoTracks.forEach((track) => {
             track.enabled = !track.enabled;
@@ -213,21 +265,44 @@ export function useWebRTC() {
         pendingCandidatesRef.current = [];
 
         localStreamRef.current?.getTracks().forEach((track) => track.stop());
-        localStreamRef.current = null;
+        remoteStreamRef.current?.getTracks().forEach((track) => track.stop());
 
+        localStreamRef.current = null;
+        remoteStreamRef.current = null;
+
+        setLocalStream(null);
+        setRemoteStream(null);
         setOtherUserId(null);
-        setCallStatus("idle");
+        changeCallStatus("idle");
+        setIncomingCall(null);
         setIsMuted(false);
-        setIsCameraEnabled(true);
+        setIsCameraEnabled(false);
     }
 
-    useSocketEvent("call:offer", ({ callerId, offer }: IncomingCall) => {
+    useSocketEvent("call:offer", async ({ callerId, offer }: IncomingCall) => {
+        const peerConnection = peerConnectionRef.current;
+
+        if (peerConnection && callStatusRef.current === "connected") {
+            await peerConnection.setRemoteDescription(offer);
+
+            const answer = await peerConnection.createAnswer();
+
+            await peerConnection.setLocalDescription(answer);
+
+            emitAnswer({
+                receiverId: callerId,
+                answer,
+            });
+
+            return;
+        }
+
         setIncomingCall({
             callerId,
             offer,
         });
 
-        setCallStatus("receiving");
+        changeCallStatus("receiving");
     });
 
     useSocketEvent(
@@ -247,7 +322,7 @@ export function useWebRTC() {
 
             pendingCandidatesRef.current = [];
 
-            setCallStatus("connected");
+            changeCallStatus("connected");
         },
     );
 

@@ -13,12 +13,16 @@ export default function StartCallButtons({
         <>
             <IconButton
                 onClick={() => {
-                    startCall(conversationId);
+                    startCall(conversationId, false);
                 }}
             >
                 <PhoneCall />
             </IconButton>
-            <IconButton>
+            <IconButton
+                onClick={() => {
+                    startCall(conversationId, true);
+                }}
+            >
                 <Video />
             </IconButton>
         </>
