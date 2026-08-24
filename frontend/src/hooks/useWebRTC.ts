@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import {
     emitAnswer,
     emitIceCandidate,
+    emitMute,
     emitOffer,
     endCallSocket,
     rejectCallSocket,
@@ -30,6 +31,7 @@ export function useWebRTC() {
 
     const [callStatus, setCallStatus] = useState<CallStatus>("idle");
     const [isMuted, setIsMuted] = useState(false);
+    const [isRemoteMuted, setIsRemoteMuted] = useState(false);
     const [isCameraEnabled, setIsCameraEnabled] = useState(false);
     const [incomingCall, setIncomingCall] = useState<IncomingCall | null>(null);
     const [calledUser, setCalledUser] = useState<{
@@ -217,7 +219,10 @@ export function useWebRTC() {
             track.enabled = !track.enabled;
         });
 
-        setIsMuted(audioTracks.some((track) => !track.enabled));
+        const muted = audioTracks.some((track) => !track.enabled);
+        setIsMuted(muted);
+
+        emitMute({ muted, receiverId: otherUserId! });
     }
 
     async function toggleCamera() {
@@ -371,6 +376,10 @@ export function useWebRTC() {
         endCall();
     });
 
+    useSocketEvent("call:mute", ({ muted }: { muted: boolean }) => {
+        setIsRemoteMuted(muted);
+    });
+
     return {
         localStreamRef,
         remoteStreamRef,
@@ -384,6 +393,7 @@ export function useWebRTC() {
         setCalledUser,
 
         isMuted,
+        isRemoteMuted,
         isCameraEnabled,
 
         startCall,

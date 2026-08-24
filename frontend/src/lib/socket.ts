@@ -100,3 +100,16 @@ export function endCallSocket({ receiverId }: { receiverId: number }) {
         receiverId,
     });
 }
+
+export function emitMute({
+    receiverId,
+    muted,
+}: {
+    receiverId: number;
+    muted: boolean;
+}) {
+    socket.emit("call:mute", {
+        receiverId,
+        muted,
+    });
+}

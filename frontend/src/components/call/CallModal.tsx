@@ -16,6 +16,7 @@ export default function CallModal() {
         incomingCall,
 
         isMuted,
+        isRemoteMuted,
         toggleMicrophone,
 
         isCameraEnabled,
@@ -80,8 +81,17 @@ export default function CallModal() {
             {callStatus === "connected" && (
                 <div className="flex flex-col h-full justify-center gap-5">
                     <div className="flex justify-center gap-4">
-                        <CallVideo stream={localStream} isLocal />
-                        <CallVideo stream={remoteStream} />
+                        <CallVideo
+                            stream={remoteStream}
+                            muted={isRemoteMuted}
+                            user={{ username: "Nome" }}
+                        />
+                        <CallVideo
+                            stream={localStream}
+                            muted={isMuted}
+                            isLocal
+                            user={{ username: "Nome" }}
+                        />
                     </div>
 
                     <div className="flex justify-center">

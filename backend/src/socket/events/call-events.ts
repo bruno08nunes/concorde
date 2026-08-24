@@ -36,4 +36,8 @@ export function registerCallEvents(io: Server, socket: Socket) {
     socket.on("call:end", ({ receiverId }) => {
         io.to(`user:${receiverId}`).emit("call:end");
     });
+
+    socket.on("call:mute", ({ receiverId, muted }) => {
+        io.to(`user:${receiverId}`).emit("call:mute", { muted });
+    });
 }
