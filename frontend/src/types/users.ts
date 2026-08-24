@@ -5,6 +5,18 @@ export interface IUserItem {
     profilePictureUrl: string | null;
 }
 
+export interface AuthUser {
+    id: number;
+    username: string;
+    profilePictureId: number | null;
+    profilePicture: {
+        url: string
+    } | null;
+    createdAt: Date;
+    deletedAt: Date | null;
+    updatedAt: Date;
+}
+
 export interface User {
     id: number;
     username: string;

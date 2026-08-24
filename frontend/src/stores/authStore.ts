@@ -1,17 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-type User = {
-    id: number;
-    username: string;
-    email: string;
-};
+import type { AuthUser } from "../types/users";
 
 type AuthStore = {
-    user: User | null;
+    user: AuthUser | null;
     token: string | null;
 
-    login: (user: User, token: string) => void;
+    login: (user: AuthUser, token: string) => void;
     logout: () => void;
 };
 

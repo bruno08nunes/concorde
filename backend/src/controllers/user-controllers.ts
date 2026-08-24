@@ -118,5 +118,10 @@ export async function registerController(req: Request, res: Response) {
         message: "Cadastro realizado",
         success: true,
         token,
+        data: {
+            ...user,
+            profilePicture: null,
+            password: undefined,
+        },
     });
 }

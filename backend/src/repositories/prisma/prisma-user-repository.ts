@@ -27,6 +27,13 @@ export default class PrismaUserRepository implements IUserRepository {
             where: {
                 email,
             },
+            include: {
+                profilePicture: {
+                    select: {
+                        url: true,
+                    },
+                },
+            },
         });
     }
 
