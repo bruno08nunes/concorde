@@ -9,13 +9,14 @@ export default function StartCallButtons({
     conversationId: number;
     user: { username: string; profilePictureUrl: string | undefined };
 }) {
-    const { startCall, setCalledUser } = useWebRTCContext();
+    const { startCall, setCalledUser, setOtherUserData } = useWebRTCContext();
 
     return (
         <>
             <IconButton
                 onClick={() => {
                     setCalledUser(user);
+                    setOtherUserData(user);
                     startCall(conversationId, false);
                 }}
             >

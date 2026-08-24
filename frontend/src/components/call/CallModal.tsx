@@ -14,6 +14,7 @@ export default function CallModal() {
 
         calledUser,
         incomingCall,
+        otherUserData,
 
         isMuted,
         isRemoteMuted,
@@ -84,13 +85,13 @@ export default function CallModal() {
                         <CallVideo
                             stream={remoteStream}
                             muted={isRemoteMuted}
-                            user={{ username: "Nome" }}
+                            user={{ username: otherUserData?.username ?? "" }}
                         />
                         <CallVideo
                             stream={localStream}
                             muted={isMuted}
                             isLocal
-                            user={{ username: "Nome" }}
+                            user={{ username: "Você" }}
                         />
                     </div>
 

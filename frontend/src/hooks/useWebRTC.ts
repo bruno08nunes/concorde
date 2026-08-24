@@ -39,6 +39,10 @@ export function useWebRTC() {
         profilePictureUrl: string | undefined;
     } | null>(null);
     const [otherUserId, setOtherUserId] = useState<number | null>(null);
+    const [otherUserData, setOtherUserData] = useState<{
+        username: string;
+        profilePictureUrl?: string;
+    } | null>(null);
 
     const callStatusRef = useRef<CallStatus>("idle");
 
@@ -166,9 +170,13 @@ export function useWebRTC() {
             return;
         }
 
-        const { callerId, offer } = incomingCall;
+        const { callerId, offer, callerName, callerPicture } = incomingCall;
 
         setOtherUserId(callerId);
+        setOtherUserData({
+            username: callerName || "",
+            profilePictureUrl: callerPicture?.url,
+        });
         setIncomingCall(null);
 
         await startLocalStream(incomingCall.isVideoCall ?? false);
@@ -391,6 +399,8 @@ export function useWebRTC() {
         incomingCall,
         calledUser,
         setCalledUser,
+        otherUserData,
+        setOtherUserData,
 
         isMuted,
         isRemoteMuted,
