@@ -4,6 +4,7 @@ import CallVideo from "./CallVideo";
 import CallButton from "./CallButton";
 import ReceivingCall from "./ReceivingCall";
 import Calling from "./Calling";
+import { useAuthStore } from "../../stores/authStore";
 
 export default function CallModal() {
     const {
@@ -22,6 +23,8 @@ export default function CallModal() {
         toggleCamera,
     } = useWebRTCContext();
 
+    const { user: userData } = useAuthStore();
+
     return (
         <div
             className={
@@ -29,13 +32,9 @@ export default function CallModal() {
                 (callStatus === "idle" ? " hidden" : "")
             }
         >
-            {callStatus === "receiving" && (
-                <ReceivingCall />
-            )}
+            {callStatus === "receiving" && <ReceivingCall />}
 
-            {callStatus === "calling" && (
-                <Calling />
-            )}
+            {callStatus === "calling" && <Calling />}
 
             {callStatus === "connected" && (
                 <div className="flex flex-col h-full justify-center gap-5">
@@ -49,7 +48,7 @@ export default function CallModal() {
                             stream={localStream}
                             muted={isMuted}
                             isLocal
-                            user={{ username: "Você" }}
+                            user={{ username: userData?.username ?? "Você" }}
                         />
                     </div>
 
