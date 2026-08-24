@@ -5,7 +5,7 @@ import { z } from "zod";
 import { login as loginApi } from "../api/auth";
 import Input from "../components/form/Input";
 import { useAuthStore } from "../stores/authStore";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast, Toaster } from "sonner";
 
 function Login() {
@@ -43,10 +43,10 @@ function Login() {
     });
 
     return (
-        <div className="min-h-svh flex justify-center items-center">
+        <div className="min-h-svh flex flex-col justify-center items-center gap-4 text-white">
             <form
                 onSubmit={handleSubmit((data) => mutation.mutate(data))}
-                className="flex flex-col p-8 gap-4 w-100 bg-slate- 700 border-indigo-600 border-4 text-white rounded-2xl"
+                className="flex flex-col p-8 gap-4 w-100 bg-slate- 700 border-indigo-600 border-4 rounded-2xl"
             >
                 <h2 className="text-4xl text-center text-shadow-indigo-600 text-shadow-lg">
                     Login
@@ -80,6 +80,7 @@ function Login() {
                     {mutation.isPending ? "Entrando" : "Entrar"}
                 </button>
             </form>
+            <p>Não tem uma conta? <Link to={"/cadastrar"} className="bg-indigo-600 px-1 rounded-md underline hover:no-underline">Cadastre-se</Link></p>
             <Toaster />
         </div>
     );
