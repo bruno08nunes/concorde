@@ -20,6 +20,7 @@ export default function CallModal() {
         toggleMicrophone,
 
         isCameraEnabled,
+        isRemoteCameraEnabled,
         toggleCamera,
     } = useWebRTCContext();
 
@@ -43,12 +44,14 @@ export default function CallModal() {
                             stream={remoteStream}
                             muted={isRemoteMuted}
                             user={{ username: otherUserData?.username ?? "" }}
+                            isCameraEnabled={isRemoteCameraEnabled}
                         />
                         <CallVideo
                             stream={localStream}
                             muted={isMuted}
                             isLocal
                             user={{ username: userData?.username ?? "Você" }}
+                            isCameraEnabled={isCameraEnabled}
                         />
                     </div>
 

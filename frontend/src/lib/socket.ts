@@ -113,3 +113,13 @@ export function emitMute({
         muted,
     });
 }
+
+export function emitCamera({
+    receiverId,
+    enabled,
+}: {
+    receiverId: number;
+    enabled: boolean;
+}) {
+    socket.emit("call:camera", { receiverId, enabled });
+}

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import {
     emitAnswer,
+    emitCamera,
     emitIceCandidate,
     emitMute,
     emitOffer,
@@ -33,6 +34,7 @@ export function useWebRTC() {
     const [isMuted, setIsMuted] = useState(false);
     const [isRemoteMuted, setIsRemoteMuted] = useState(false);
     const [isCameraEnabled, setIsCameraEnabled] = useState(false);
+    const [isRemoteCameraEnabled, setIsRemoteCameraEnabled] = useState(false);
     const [incomingCall, setIncomingCall] = useState<IncomingCall | null>(null);
     const [calledUser, setCalledUser] = useState<{
         username: string;
@@ -260,6 +262,7 @@ export function useWebRTC() {
 
             setLocalStream(stream);
             setIsCameraEnabled(true);
+            emitCamera({ enabled: true, receiverId: otherUserId! });
 
             await renegotiate();
 
@@ -270,7 +273,10 @@ export function useWebRTC() {
             track.enabled = !track.enabled;
         });
 
-        setIsCameraEnabled(videoTracks.some((track) => track.enabled));
+        const enabled = videoTracks.some((track) => track.enabled);
+
+        setIsCameraEnabled(enabled);
+        emitCamera({ enabled, receiverId: otherUserId! });
     }
 
     async function endCall() {
@@ -297,7 +303,9 @@ export function useWebRTC() {
         changeCallStatus("idle");
         setIncomingCall(null);
         setIsMuted(false);
+        setIsRemoteMuted(false);
         setIsCameraEnabled(false);
+        setIsRemoteCameraEnabled(false);
     }
 
     useSocketEvent(
@@ -388,6 +396,10 @@ export function useWebRTC() {
         setIsRemoteMuted(muted);
     });
 
+    useSocketEvent("call:camera", ({ enabled }: { enabled: boolean }) => {
+        setIsRemoteCameraEnabled(enabled);
+    });
+
     return {
         localStreamRef,
         remoteStreamRef,
@@ -405,6 +417,7 @@ export function useWebRTC() {
         isMuted,
         isRemoteMuted,
         isCameraEnabled,
+        isRemoteCameraEnabled,
 
         startCall,
         acceptCall,

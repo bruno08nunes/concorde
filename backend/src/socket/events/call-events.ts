@@ -40,4 +40,8 @@ export function registerCallEvents(io: Server, socket: Socket) {
     socket.on("call:mute", ({ receiverId, muted }) => {
         io.to(`user:${receiverId}`).emit("call:mute", { muted });
     });
+
+    socket.on("call:camera", ({ receiverId, enabled }) => {
+        io.to(`user:${receiverId}`).emit("call:camera", { enabled });
+    });
 }
