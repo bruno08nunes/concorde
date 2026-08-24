@@ -5,6 +5,7 @@ import CallButton from "./CallButton";
 import ReceivingCall from "./ReceivingCall";
 import Calling from "./Calling";
 import { useAuthStore } from "../../stores/authStore";
+import { useEffect, useRef } from "react";
 
 export default function CallModal() {
     const {
@@ -25,6 +26,28 @@ export default function CallModal() {
     } = useWebRTCContext();
 
     const { user: userData } = useAuthStore();
+
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        if (!["calling", "receiving"].includes(callStatus)) {
+            if (!audioRef.current?.paused) {
+                audioRef.current?.pause();
+            }
+
+            return;
+        }
+
+        if (!audioRef.current) {
+            audioRef.current = new Audio(
+                "http://localhost:5173/call-sound.mp3",
+            );
+            audioRef.current.volume = 0.5;
+            audioRef.current.loop = true;
+        }
+
+        audioRef.current.play();
+    }, [callStatus]);
 
     return (
         <div
