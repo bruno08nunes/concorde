@@ -7,6 +7,7 @@ import LinkButton from "../components/LinkButton";
 import Button from "../components/form/Button";
 import { sendFriendshipRequest } from "../api/friendships";
 import { toast } from "sonner";
+import useTitle from "../hooks/useTitle";
 
 export default function UserInfo() {
     const { username } = useParams();
@@ -36,6 +37,8 @@ export default function UserInfo() {
             });
         },
     });
+
+    useTitle(user?.username ? "Informações de " + user.username : "Informações");
 
     if (isLoading) {
         return (

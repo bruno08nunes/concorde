@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Button from "../components/form/Button";
 import { useAuthStore } from "../stores/authStore";
+import useTitle from "../hooks/useTitle";
 
 export default function ConfigPage() {
     const { logout } = useAuthStore();
@@ -10,6 +11,8 @@ export default function ConfigPage() {
         logout();
         navigate("/login");
     }
+
+    useTitle("Configurações");
 
     return (
         <section className="flex flex-col gap-4 p-3 h-full">

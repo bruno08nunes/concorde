@@ -7,6 +7,7 @@ import Input from "../components/form/Input";
 import { useAuthStore } from "../stores/authStore";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, Toaster } from "sonner";
+import useTitle from "../hooks/useTitle";
 
 function Register() {
     const login = useAuthStore((state) => state.login);
@@ -50,6 +51,8 @@ function Register() {
         resolver: zodResolver(schema),
     });
 
+    useTitle("Cadastro");
+
     return (
         <div className="min-h-svh flex flex-col justify-center items-center gap-4 text-white">
             <form
@@ -57,7 +60,7 @@ function Register() {
                 className="flex flex-col p-8 gap-4 w-100 bg-slate- 700 border-indigo-600 border-4 rounded-2xl"
             >
                 <h2 className="text-4xl text-center text-shadow-indigo-600 text-shadow-lg">
-                    Login
+                    Cadastro
                 </h2>
                 <Input
                     type="text"

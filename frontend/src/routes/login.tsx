@@ -7,6 +7,7 @@ import Input from "../components/form/Input";
 import { useAuthStore } from "../stores/authStore";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, Toaster } from "sonner";
+import useTitle from "../hooks/useTitle";
 
 function Login() {
     const login = useAuthStore((state) => state.login);
@@ -41,6 +42,8 @@ function Login() {
     } = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
     });
+
+    useTitle("Login");
 
     return (
         <div className="min-h-svh flex flex-col justify-center items-center gap-4 text-white">

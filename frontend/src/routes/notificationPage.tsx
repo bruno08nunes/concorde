@@ -6,14 +6,17 @@ import DeclineButton from "../components/notification/DeclineButton";
 import AcceptButton from "../components/notification/AcceptButton";
 import FriendRequestNotification from "../components/notification/FriendRequestNotification";
 import NotificationSkeleton from "../components/notification/NotificationSkeleton";
+import useTitle from "../hooks/useTitle";
 
 export default function NotificationPage() {
     const { token } = useAuthStore();
-
+    
     const { data, error, isLoading } = useQuery({
         queryKey: ["notifications"],
         queryFn: () => listPendingFriendshipRequests({ token: token! }),
     });
+    
+    useTitle("Notificações");
 
     if (isLoading) {
         return <NotificationSkeleton />;
@@ -26,6 +29,7 @@ export default function NotificationPage() {
             </p>
         );
     }
+
 
     return (
         <section className="flex flex-col gap-4 p-3">

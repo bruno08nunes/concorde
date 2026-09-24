@@ -8,6 +8,7 @@ import MessagePageHeader from "../components/messages/MessagePageHeader";
 import MessageForm from "../components/messages/form/MessageForm";
 import { useConversationRoom } from "../hooks/useConversationRoom";
 import type { SendMessage } from "../types/messages";
+import useTitle from "../hooks/useTitle";
 
 export default function MessagesPage() {
     const { username } = useParams();
@@ -40,6 +41,7 @@ export default function MessagesPage() {
     });
 
     useConversationRoom(friend?.id);
+    useTitle(friend?.username ? "Conversa com " + friend.username : "Conversa");
 
     return (
         <>
