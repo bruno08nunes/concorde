@@ -5,6 +5,7 @@ import {
     loginController,
     registerController,
     searchUsersByUsername,
+    updateUserController,
 } from "../controllers/user-controllers";
 import { authMiddleware } from "../middlewares/auth-middleware";
 
@@ -15,5 +16,6 @@ userRoutes.get("/user/:username", authMiddleware, getUserByUsername);
 userRoutes.get("/users/:username", searchUsersByUsername);
 userRoutes.post("/auth/login", loginController);
 userRoutes.post("/auth/register", registerController);
+userRoutes.put("/users", authMiddleware, updateUserController);
 
 export default userRoutes;

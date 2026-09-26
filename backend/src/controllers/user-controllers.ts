@@ -125,3 +125,52 @@ export async function registerController(req: Request, res: Response) {
         },
     });
 }
+
+export async function updateUserController(req: Request, res: Response) {
+    const updateUserBodySchema = z.object({
+        username: z
+            .string()
+            .min(3, "Seu nome de usuário deve ter no mínimo 3 caracteres")
+            .max(20, "Tamanho máximo de nome excedido (20)")
+            .regex(
+                /^[a-zA-Z0-9_]+$/,
+                "Seu nome deve conter apenas letras, números ou underlines (_)",
+            )
+            .optional(),
+
+        email: z
+            .email("Email inválido")
+            .optional(),
+
+        password: z
+            .string()
+            .min(6, "A senha deve ter pelo menos 6 caracteres")
+            .max(20, "Tamanho máximo de senha excedido (20)")
+            .optional(),
+
+        newPassword: z
+            .string()
+            .min(6, "A senha deve ter pelo menos 6 caracteres")
+            .max(20, "Tamanho máximo de senha excedido (20)")
+            .optional(),
+    });
+
+    const { username, email, password, newPassword } =
+        updateUserBodySchema.parse(req.body);
+
+    const user = await userService.updateUser(req.user!.id, {
+        username,
+        email,
+        password,
+        newPassword,
+    });
+
+    res.status(200).json({
+        message: "Usuário atualizado",
+        success: true,
+        data: {
+            ...user,
+            password: undefined,
+        },
+    });
+}

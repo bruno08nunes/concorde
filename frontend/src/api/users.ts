@@ -36,3 +36,30 @@ export async function getUsersByUsername(username: string) {
 
     return data.data;
 }
+
+export async function updateUser({
+    token,
+    ...data
+}: {
+    username?: string;
+    email?: string;
+    password?: string;
+    newPassword?: string;
+} & { token: string }) {
+    const res = await fetch(`${env.VITE_API_URL}/users`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+        headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json"
+        },
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+        throw new Error(result.message);
+    }
+
+    return result;
+}

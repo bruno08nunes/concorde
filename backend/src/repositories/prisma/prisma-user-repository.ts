@@ -1,5 +1,8 @@
 import { User } from "../../../generated/prisma/client";
-import { UserCreateInput } from "../../../generated/prisma/models";
+import {
+    UserCreateInput,
+    UserUpdateInput,
+} from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 import { IUserRepository } from "../user-repository";
 
@@ -8,9 +11,6 @@ export default class PrismaUserRepository implements IUserRepository {
         return prisma.user.findUnique({
             where: {
                 id,
-            },
-            omit: {
-                password: true,
             },
             include: {
                 profilePicture: {
@@ -126,5 +126,9 @@ export default class PrismaUserRepository implements IUserRepository {
         return prisma.user.create({
             data,
         });
+    }
+
+    update(id: number, data: UserUpdateInput) {
+        return prisma.user.update({ where: { id }, data });
     }
 }

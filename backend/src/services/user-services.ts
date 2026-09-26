@@ -1,5 +1,8 @@
 import { IUserRepository } from "../repositories/user-repository";
-import { UserCreateInput } from "../../generated/prisma/models";
+import {
+    UserCreateInput,
+    UserUpdateInput,
+} from "../../generated/prisma/models";
 import { comparePassword, hashPassword } from "../utils/crypto";
 import {
     InvalidCredentialsError,
@@ -18,7 +21,9 @@ export class UserService {
             throw new NotFound("Usuário não encontrado.");
         }
 
-        return user;
+        const {password, ...safeUser} = user;
+
+        return safeUser;
     }
 
     async getUserByUsername(username: string, userId: number) {
@@ -73,6 +78,64 @@ export class UserService {
         return this.userRepository.create({
             username,
             email,
+            password: hashedPassword,
+        });
+    }
+
+    async updateUser(
+        id: number,
+        {
+            username,
+            email,
+            password,
+            newPassword,
+        }: {
+            username?: string;
+            email?: string;
+            password?: string;
+            newPassword?: string;
+        },
+    ) {
+        const user = await this.userRepository.findById(id);
+
+        if (!user) {
+            throw new NotFound("Usuário não encontrado!");
+        }
+
+        if (email && email !== user.email) {
+            const existingUserWithEmail =
+                await this.userRepository.findByEmail(email);
+
+            if (existingUserWithEmail && existingUserWithEmail.id !== id) {
+                throw new UserAlreadyExistsError("email");
+            }
+        }
+
+        if (username && username !== user.username) {
+            const existingUserWithUsername =
+                await this.userRepository.findByUsername(username);
+
+            if (
+                existingUserWithUsername &&
+                existingUserWithUsername.id !== id
+            ) {
+                throw new UserAlreadyExistsError("nome de usuário");
+            }
+        }
+
+        let hashedPassword = user.password!;
+
+        if (newPassword) {
+            if (!password || !await comparePassword(password, hashedPassword)) {
+                throw new InvalidCredentialsError();
+            }
+
+            hashedPassword = await hashPassword(newPassword);
+        }
+
+        return this.userRepository.update(id, {
+            username: username ?? user.username,
+            email: email ?? user.email,
             password: hashedPassword,
         });
     }

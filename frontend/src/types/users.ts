@@ -8,6 +8,7 @@ export interface IUserItem {
 export interface AuthUser {
     id: number;
     username: string;
+    email: string;
     profilePictureId: number | null;
     profilePicture: {
         url: string
