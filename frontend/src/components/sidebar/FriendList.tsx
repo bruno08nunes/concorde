@@ -79,9 +79,7 @@ export default function FriendList({ search }: { search: string }) {
                 <UserListItem
                     key={friendship.friendshipId}
                     baseURL="/amigos/"
-                    imgURL={
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
-                    }
+                    imgURL={friendship.friend.profilePictureUrl}
                     name={friendship.friend.username}
                     isOnline={friendship.friend.isOnline}
                     hasNewMessages={usersWithUnreadMessages.has(

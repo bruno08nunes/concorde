@@ -49,6 +49,7 @@ export default function MessagesPage() {
                 username={username!}
                 isOnline={friend?.isOnline}
                 conversationId={friend?.id}
+                profilePictureUrl={friend?.profilePicture?.url}
             />
             <hr />
             {friend && (

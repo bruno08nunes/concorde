@@ -9,6 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import Input from "../components/form/Input";
 import { updateUser } from "../api/users";
+import ImagePicker from "../components/form/ImagePicker";
+import { uploadFiles } from "../api/files";
 
 export default function ConfigPage() {
     const { logout, login, token, user } = useAuthStore();
@@ -59,6 +61,25 @@ export default function ConfigPage() {
             .max(20, "A senha deve ter ao máximo 20 caracteres")
             .optional()
             .or(z.literal("")),
+        profilePicture: z
+            .instanceof(FileList)
+            .optional()
+            .refine(
+                (files) =>
+                    !files ||
+                    files.length === 0 ||
+                    files[0].size <= 5 * 1024 * 1024,
+                "A imagem deve ter no máximo 5 MB",
+            )
+            .refine(
+                (files) =>
+                    !files ||
+                    files.length === 0 ||
+                    ["image/jpeg", "image/png", "image/webp"].includes(
+                        files[0].type,
+                    ),
+                "A imagem deve ser JPG, PNG ou WebP",
+            ),
     });
 
     const {
@@ -70,28 +91,57 @@ export default function ConfigPage() {
     });
 
     return (
-        <section className="flex flex-col gap-4 p-3 h-full">
-            <h1 className="text-2xl">Configurações</h1>
-            <hr />
+        <section className="flex flex-col gap-4 p-3 h-full overflow-auto">
+            <div className="fixed">
+                <Button onClick={handleLogout} text="Deslogar" />
+            </div>
             <div className="flex justify-center">
                 <form
-                    onSubmit={handleSubmit((data) => {
-                        const updateData = Object.fromEntries(
-                            Object.entries(data).filter(
-                                ([, value]) => value !== "",
-                            ),
-                        );
+                    onSubmit={handleSubmit(async (data) => {
+                        try {
+                            let profilePictureId: number | undefined;
+                            
+                            console.log(data.profilePicture);
+                            if (data.profilePicture && data.profilePicture[0]) {
+                                const formData = new FormData();
 
-                        mutation.mutate({
-                            token: token!,
-                            ...updateData,
-                        });
+                                formData.append(
+                                    "files",
+                                    data.profilePicture[0],
+                                );
+
+                                const uploadedFiles =
+                                    await uploadFiles(formData);
+                                
+
+                                profilePictureId = uploadedFiles[0].fileId;
+                            }
+
+                            const updateData = Object.fromEntries(
+                                Object.entries(data).filter(
+                                    ([, value]) => value !== "",
+                                ),
+                            );
+
+                            mutation.mutate({
+                                token: token!,
+                                ...updateData,
+                                profilePictureId,
+                            });
+                        } catch (err) {
+                            toast.error(
+                                err instanceof Error
+                                    ? err.message
+                                    : "Erro ao enviar a foto.",
+                            );
+                        }
                     })}
                     className="flex flex-col p-8 gap-4 w-[50%] rounded-2xl"
                 >
                     <h2 className="text-4xl text-center text-shadow-indigo-600 text-shadow-lg">
                         Editar Perfil
                     </h2>
+                    <ImagePicker {...register("profilePicture")} defaultProfilePictureUrl={user?.profilePicture?.url} />
                     <Input
                         type="text"
                         id="username"
@@ -143,9 +193,6 @@ export default function ConfigPage() {
                         {mutation.isPending ? "Enviando" : "Editar"}
                     </button>
                 </form>
-            </div>
-            <div className="flex-1 flex items-end">
-                <Button onClick={handleLogout} text="Deslogar" />
             </div>
         </section>
     );

@@ -21,7 +21,7 @@ export class UserService {
             throw new NotFound("Usuário não encontrado.");
         }
 
-        const {password, ...safeUser} = user;
+        const { password, ...safeUser } = user;
 
         return safeUser;
     }
@@ -89,11 +89,13 @@ export class UserService {
             email,
             password,
             newPassword,
+            profilePictureId,
         }: {
             username?: string;
             email?: string;
             password?: string;
             newPassword?: string;
+            profilePictureId?: number;
         },
     ) {
         const user = await this.userRepository.findById(id);
@@ -126,7 +128,10 @@ export class UserService {
         let hashedPassword = user.password!;
 
         if (newPassword) {
-            if (!password || !await comparePassword(password, hashedPassword)) {
+            if (
+                !password ||
+                !(await comparePassword(password, hashedPassword))
+            ) {
                 throw new InvalidCredentialsError();
             }
 
@@ -137,6 +142,9 @@ export class UserService {
             username: username ?? user.username,
             email: email ?? user.email,
             password: hashedPassword,
+            profilePicture: profilePictureId
+                ? { connect: { id: profilePictureId } }
+                : undefined,
         });
     }
 }

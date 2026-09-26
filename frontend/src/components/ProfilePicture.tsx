@@ -11,7 +11,7 @@ export default function ProfilePicture({ imgURL, size = "12x12" }: { imgURL: str
         <>
             {imgURL ? (
                 <img
-                    src={imgURL}
+                    src={"http://localhost:3333/uploads/" + imgURL}
                     alt=""
                     className={"w-12 rounded-full object-cover aspect-square" + sizes[size]}
                 />

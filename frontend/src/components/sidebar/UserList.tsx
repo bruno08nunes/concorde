@@ -45,9 +45,7 @@ export default function UserList({ username }: { username: string }) {
                 <UserListItem
                     key={user.id}
                     baseURL="/usuarios/"
-                    imgURL={
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4XpLLk2nkvoWAGwt99nAkywUI5X9Th9z-qa-By9H5pe4ImI4iVZftLro&s=10"
-                    }
+                    imgURL={user.profilePictureUrl}
                     name={user.username}
                 />
             ))}

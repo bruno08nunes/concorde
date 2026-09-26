@@ -45,6 +45,7 @@ export async function updateUser({
     email?: string;
     password?: string;
     newPassword?: string;
+    profilePictureId?: number;
 } & { token: string }) {
     const res = await fetch(`${env.VITE_API_URL}/users`, {
         method: "PUT",

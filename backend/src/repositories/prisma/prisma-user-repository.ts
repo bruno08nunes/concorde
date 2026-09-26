@@ -129,6 +129,10 @@ export default class PrismaUserRepository implements IUserRepository {
     }
 
     update(id: number, data: UserUpdateInput) {
-        return prisma.user.update({ where: { id }, data });
+        return prisma.user.update({
+            where: { id },
+            data,
+            include: { profilePicture: true },
+        });
     }
 }

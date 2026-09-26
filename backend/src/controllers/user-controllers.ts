@@ -137,25 +137,21 @@ export async function updateUserController(req: Request, res: Response) {
                 "Seu nome deve conter apenas letras, números ou underlines (_)",
             )
             .optional(),
-
-        email: z
-            .email("Email inválido")
-            .optional(),
-
+        email: z.email("Email inválido").optional(),
         password: z
             .string()
             .min(6, "A senha deve ter pelo menos 6 caracteres")
             .max(20, "Tamanho máximo de senha excedido (20)")
             .optional(),
-
         newPassword: z
             .string()
             .min(6, "A senha deve ter pelo menos 6 caracteres")
             .max(20, "Tamanho máximo de senha excedido (20)")
             .optional(),
+        profilePictureId: z.number().optional(),
     });
 
-    const { username, email, password, newPassword } =
+    const { username, email, password, newPassword, profilePictureId } =
         updateUserBodySchema.parse(req.body);
 
     const user = await userService.updateUser(req.user!.id, {
@@ -163,6 +159,7 @@ export async function updateUserController(req: Request, res: Response) {
         email,
         password,
         newPassword,
+        profilePictureId
     });
 
     res.status(200).json({
